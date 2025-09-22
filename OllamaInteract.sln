@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2DED7169-C2F4-41CD-BA0A-35C66074E63E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaInteract.Core", "src\OllamaInteract.Core\OllamaInteract.Core.csproj", "{8848A017-807A-40F2-9244-5EC43A04DC06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaInteract.CLI", "src\OllamaInteract.CLI\OllamaInteract.CLI.csproj", "{FA2391DB-D84D-4AEE-992A-68BCF9C802BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaInteract.GUI", "src\OllamaInteract.GUI\OllamaInteract.GUI.csproj", "{20F7EE41-5DD4-4C79-9326-EC58770CA41C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8848A017-807A-40F2-9244-5EC43A04DC06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8848A017-807A-40F2-9244-5EC43A04DC06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8848A017-807A-40F2-9244-5EC43A04DC06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8848A017-807A-40F2-9244-5EC43A04DC06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA2391DB-D84D-4AEE-992A-68BCF9C802BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA2391DB-D84D-4AEE-992A-68BCF9C802BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA2391DB-D84D-4AEE-992A-68BCF9C802BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA2391DB-D84D-4AEE-992A-68BCF9C802BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20F7EE41-5DD4-4C79-9326-EC58770CA41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20F7EE41-5DD4-4C79-9326-EC58770CA41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20F7EE41-5DD4-4C79-9326-EC58770CA41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20F7EE41-5DD4-4C79-9326-EC58770CA41C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8848A017-807A-40F2-9244-5EC43A04DC06} = {2DED7169-C2F4-41CD-BA0A-35C66074E63E}
+		{FA2391DB-D84D-4AEE-992A-68BCF9C802BF} = {2DED7169-C2F4-41CD-BA0A-35C66074E63E}
+		{20F7EE41-5DD4-4C79-9326-EC58770CA41C} = {2DED7169-C2F4-41CD-BA0A-35C66074E63E}
+	EndGlobalSection
+EndGlobal
