@@ -23,10 +23,17 @@ async def chat_endpoint(message: str, model: str):
 @router.get("/models")
 async def models_endpoint():
     try:
-        models = await ollama_client.list_models()
+        awaitedModels = await ollama_client.list_models()
+        formattedModels = [ # format them to match Model class in C#               
+            {
+                "name": m['model'],
+                "size": m['size']
+            }
+            for m in awaitedModels
+        ]
         return {
             "success": True,
-            "models": models,
+            "models": formattedModels,
             "error": None
         }
     except Exception as e:

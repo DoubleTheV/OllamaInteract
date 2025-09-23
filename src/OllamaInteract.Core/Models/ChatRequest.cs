@@ -1,4 +1,4 @@
-namespace OllamaInteract.Core;
+namespace OllamaInteract.Core.Models;
 
 public class ChatRequest
 {
