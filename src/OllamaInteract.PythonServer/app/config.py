@@ -1,3 +1,5 @@
+### Future to add env variable config, allowing for scaled up utilization
+
 class Config:
     ### Configuration settings for Ollama ###
     OLLAMA_HOST = 'http://localhost:11434'
