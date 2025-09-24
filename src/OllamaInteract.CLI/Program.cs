@@ -14,7 +14,7 @@ try
     var models = await ollamaClient.GetAvailableModelsAsync();
     foreach(var m in models)
     {
-        Console.WriteLine($"Name: {m.Name}; Size: {m.Size};");
+        Console.WriteLine($"Name: {m.Name}; ParameterS: {m.ParameterS};");
     }
 
     Console.WriteLine("=======================");

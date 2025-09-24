@@ -10,5 +10,5 @@ public class AvailableModelsResponse
 public class AvailableModel
 {
     public string Name { get; set; } = string.Empty;
-    public string Size { get; set; } = string.Empty;
+    public string ParameterS { get; set; } = string.Empty;
 }

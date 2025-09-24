@@ -27,7 +27,7 @@ async def models_endpoint():
         formattedModels = [ # format them to match Model class in C#               
             {
                 "name": m['model'],
-                "size": m['details']['parameter_size']
+                "parameters": m['details']['parameter_size']
             }
             for m in awaitedModels
         ]
