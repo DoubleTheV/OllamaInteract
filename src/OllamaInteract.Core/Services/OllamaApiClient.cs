@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http.Json;
+using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks;
 using OllamaInteract.Core.Models;
 
 namespace OllamaInteract.Core.Services;
@@ -24,8 +26,19 @@ public class OllamaApiClient : IOllamaApiClient
     {
     }
 
-    public Task<bool> IsServerHealthyAsync()
-    {
-    }
     */
+    public async Task<bool> IsServerHealthyAsync()
+    {
+        var response = await _httpClient.GetAsync("http://localhost:8000/health");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadFromJsonAsync<ServerHealthyCheck>();
+            if(json != null && json.Status == "healthy")
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

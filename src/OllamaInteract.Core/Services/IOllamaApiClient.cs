@@ -8,5 +8,5 @@ public interface IOllamaApiClient
 {
     Task<List<AvailableModel>> GetAvailableModelsAsync();
     // Task<ChatResponse> SendChatAsync(ChatRequest request);
-    // Task<bool> IsServerHealthyAsync();
+    Task<bool> IsServerHealthyAsync();
 }
