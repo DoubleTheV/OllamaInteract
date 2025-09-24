@@ -14,7 +14,17 @@ try
     var models = await ollamaClient.GetAvailableModelsAsync();
     foreach(var m in models)
     {
-        Console.WriteLine($"Name: {m.Name}; ParameterS: {m.ParameterS};");
+        Console.WriteLine($"    Name: {m.Name}; ParameterS: {m.ParameterS};");
+    }
+    if (models.Count >= 1)
+    {
+        Console.WriteLine("Communication test:");
+        var request = new ChatRequest();
+        request.Message = "Hi! I'm testing communication! Please answer shortly!";
+        request.Model = models[0].Name;
+
+        var answer = await ollamaClient.SendChatAsync(request);
+        Console.WriteLine($"    TestMessage: {request.Message} \n   Answer: {answer.Response} \n    Time elapsed: {answer.ResponseTime / 1000}s");
     }
 
     Console.WriteLine("=======================");

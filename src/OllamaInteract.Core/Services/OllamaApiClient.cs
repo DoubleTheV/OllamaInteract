@@ -29,12 +29,49 @@ public class OllamaApiClient : IOllamaApiClient
         return new List<AvailableModel>();
     }
 
-    /*
-    public Task<ChatResponse> SendChatAsync(ChatRequest chatRequest)
+
+    public async Task<ChatResponse> SendChatAsync(ChatRequest chatRequest)
     {
+        try
+        {
+            var startTime = DateTime.Now;
+
+            var queryParams = $"?message={Uri.EscapeDataString(chatRequest.Message)}" +
+                $"&model={Uri.EscapeDataString(chatRequest.Model)}";
+
+            var response = await _httpClient.PostAsync($"http://localhost:8000/api/v1/chat{queryParams}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var chatResponse = await response.Content.ReadFromJsonAsync<ChatResponse>();
+                if (chatResponse == null)
+                {
+                    chatResponse = new ChatResponse { Success = false, Error = "Invalid response format" };
+                }
+                chatResponse.ResponseTime = (long)(DateTime.Now - startTime).TotalMilliseconds;
+
+                return chatResponse;
+            }
+            else
+            {
+                return new ChatResponse
+                {
+                    Success = false,
+                    Error = $"HTTP error: {response.StatusCode}"
+                };
+            }
+        }
+        catch (Exception e)
+        {
+            return new ChatResponse
+            {
+                Success = false,
+                Error = $"Communication error: {e.Message}"
+            };
+        }
     }
 
-    */
+    
     public async Task<bool> IsServerHealthyAsync()
     {
         var response = await _httpClient.GetAsync("http://localhost:8000/health");
