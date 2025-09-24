@@ -17,7 +17,15 @@ public class OllamaApiClient : IOllamaApiClient
 
     public async Task<List<AvailableModel>> GetAvailableModelsAsync()
     {
-        await Task.Delay(1000);
+        var response = await _httpClient.GetAsync("http://localhost:8000/api/v1/models");
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadFromJsonAsync<AvailableModelsResponse>();
+            if(json != null)
+            {
+                return json.Models;
+            }
+        }
         return new List<AvailableModel>();
     }
 
