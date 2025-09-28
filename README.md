@@ -47,4 +47,4 @@ to discuss what you would like to change.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MPL-2.0](https://choosealicense.com/licenses/mpl-2.0)
