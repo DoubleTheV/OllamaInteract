@@ -34,3 +34,7 @@ cd OllamaInteract/src/OllamaInteract.GUI # for GUI
 
 dotnet watch # it will hot reload C# changes
 ```
+
+## Architecture
+
+Check [ARCHITECTURE.md](https://github.com/DoubleTheV/OllamaInteract/blob/master/docs/ARCHITECTURE.md) file for basic explaination

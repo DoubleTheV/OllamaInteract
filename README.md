@@ -51,8 +51,8 @@ dotnet run
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/DoubleTheV/OllamaInteract/blob/master/docs/CONTRIBUTING.md) for details
+See [CONTRIBUTING.md](https://github.com/DoubleTheV/OllamaInteract?tab=contributing-ov-file) for details
 
 ## License
 
-[MPL-2.0](https://choosealicense.com/licenses/mpl-2.0)
+[MPL-2.0](https://github.com/DoubleTheV/OllamaInteract?tab=MPL-2.0-1-ov-file)
