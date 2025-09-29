@@ -2,16 +2,19 @@
 
 Ollama Interact is a cross-platform CLI / Desktop app for interaction, management and memory of [Ollama](https://github.com/ollama/ollama) models.
 
-## Fatures
+## Features
 
 - Chatting with AI models through an CLI or Desktop app.
 - Memory creation and retention about user.
 - Easy customization of the models.
+- Cross platform application
 
 ## Requirements
 
-- [Ollama](https://github.com/ollama/ollama)
+- [Python](https://www.python.org/downloads/)
+- [Pip](https://pypi.org/project/pip/)
 - [.NET](https://dotnet.microsoft.com/en-us/download)
+- [Ollama](https://github.com/ollama/ollama)
 
 ## Running the app
 
