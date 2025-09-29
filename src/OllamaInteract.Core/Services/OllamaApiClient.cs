@@ -36,10 +36,7 @@ public class OllamaApiClient : IOllamaApiClient
         {
             var startTime = DateTime.Now;
 
-            var queryParams = $"?message={Uri.EscapeDataString(chatRequest.Message)}" +
-                $"&model={Uri.EscapeDataString(chatRequest.Model)}";
-
-            var response = await _httpClient.PostAsync($"http://localhost:8000/api/v1/chat{queryParams}", null);
+            var response = await _httpClient.PostAsJsonAsync($"http://localhost:8000/api/v1/chat", chatRequest);
 
             if (response.IsSuccessStatusCode)
             {

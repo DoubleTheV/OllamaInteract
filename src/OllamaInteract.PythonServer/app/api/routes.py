@@ -1,16 +1,17 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from app.services.ollama_client import OllamaClient
 
 router = APIRouter()
 ollama_client = OllamaClient()
 
 @router.post("/chat")
-async def chat_endpoint(message: str, model: str):
+async def chat_endpoint(request: Request):
     try:
-        response = await ollama_client.chat(message, model)
+        body = await request.json()
+        response = await ollama_client.chat(body.get('message'), body.get('model'))
         return {
             "success": True,
-            "model": model,
+            "model": body.get('model'),
             "response": response,
             "error": None
         }
