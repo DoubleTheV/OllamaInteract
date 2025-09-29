@@ -13,7 +13,7 @@ Ollama Interact is a cross-platform CLI / Desktop app for interaction, managemen
 - [Ollama](https://github.com/ollama/ollama)
 - [.NET](https://dotnet.microsoft.com/en-us/download)
 
-## Installation
+## Running the app
 
 **Option 1 (the easier one):**
 
@@ -26,24 +26,29 @@ Use [git](https://git-scm.com/downloads) to clone the repository and build the p
 ```bash
 git clone https://github.com/DoubleTheV/OllamaInteract.git
 
+## In terminal 1: # It will run python server
+# Go into the cloned folder
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cd src/OllamaInteract.PythonServer
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+## In terminal 2: # It will build and run the client app
+# Go into the cloned folder
 ## For CLI:
 cd OllamaInteract/src/OllamaInteract.CLI
 ## For GUI:
 cd OllamaInteract/src/OllamaInteract.GUI
 
 dotnet build
-```
 
-
-## Usage
-```bash
-## Find the .exe file in the Ollama/src/OllamaInteract.(whatever you chose)/bin/Debug/net9.0
+# Run the .exe in the /bin/Debug/net9.0
 ```
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
+See [CONTRIBUTING.md](https://github.com/DoubleTheV/OllamaInteract/blob/master/docs/CONTRIBUTING.md) for details
 
 ## License
 
