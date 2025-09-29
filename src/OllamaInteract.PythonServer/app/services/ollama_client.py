@@ -11,6 +11,7 @@ class OllamaClient:
     
     def _test_connection(self):
         try:
+            ollama.list() ## Check if ollama responds
             logger.info("Successfully connected to Ollama")
         except Exception as e:
             logger.error(f"Failed to connect to Ollama: {e}")
