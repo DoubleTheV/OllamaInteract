@@ -36,14 +36,17 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ## In terminal 2: # It will build and run the client app
 # Go into the cloned folder
-## For CLI:
-cd OllamaInteract/src/OllamaInteract.CLI
-## For GUI:
-cd OllamaInteract/src/OllamaInteract.GUI
+
+cd OllamaInteract/src/OllamaInteract.CLI # for CLI
+
+cd OllamaInteract/src/OllamaInteract.GUI # for GUI
 
 dotnet build
-
 # Run the .exe in the /bin/Debug/net9.0
+
+# or
+
+dotnet run
 ```
 
 ## Contributing
