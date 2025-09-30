@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using OllamaInteract.Core.Models;
 
 namespace OllamaInteract.Core.Services;
@@ -23,8 +22,7 @@ public class ConfigManager : IConfigManager
 
         _jsonOptions = new JsonSerializerOptions
         {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            WriteIndented = true
         };
 
         LoadConfig();
@@ -73,7 +71,7 @@ public class ConfigManager : IConfigManager
             try
             {
                 var json = JsonSerializer.Serialize(Config);
-                File.WriteAllText(ConfigFilePath, json);
+                Console.WriteLine(json);                
             }
             catch (Exception e)
             {
