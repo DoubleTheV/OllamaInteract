@@ -8,7 +8,7 @@ public static class ServiceCollection
     public static IServiceCollection AddOllamaServices(this IServiceCollection services)
     {
         services.AddHttpClient<IOllamaApiClient, OllamaApiClient>();
-        services.AddSingleton<ServerManager>();
+        // services.AddSingleton<ServerManager>();
 
         return services;
     }
