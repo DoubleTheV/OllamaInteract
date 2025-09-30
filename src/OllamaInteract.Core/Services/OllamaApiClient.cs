@@ -10,6 +10,8 @@ public class OllamaApiClient : IOllamaApiClient
 {
     private readonly HttpClient _httpClient;
 
+    private ConfigManager _configManager = new ConfigManager();
+
     public OllamaApiClient(HttpClient httpClient)
     {
         _httpClient = httpClient;
@@ -17,7 +19,7 @@ public class OllamaApiClient : IOllamaApiClient
 
     public async Task<List<AvailableModel>> GetAvailableModelsAsync()
     {
-        var response = await _httpClient.GetAsync("http://localhost:8000/api/v1/models");
+        var response = await _httpClient.GetAsync($"{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/models");
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadFromJsonAsync<AvailableModelsResponse>();
@@ -36,7 +38,7 @@ public class OllamaApiClient : IOllamaApiClient
         {
             var startTime = DateTime.Now;
 
-            var response = await _httpClient.PostAsJsonAsync($"http://localhost:8000/api/v1/chat", chatRequest);
+            var response = await _httpClient.PostAsJsonAsync($"{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/chat", chatRequest);
 
             if (response.IsSuccessStatusCode)
             {
@@ -71,7 +73,7 @@ public class OllamaApiClient : IOllamaApiClient
     
     public async Task<bool> IsServerHealthyAsync()
     {
-        var response = await _httpClient.GetAsync("http://localhost:8000/health");
+        var response = await _httpClient.GetAsync($"{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/health");
 
         if (response.IsSuccessStatusCode)
         {

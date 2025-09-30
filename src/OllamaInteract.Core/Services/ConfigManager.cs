@@ -71,7 +71,7 @@ public class ConfigManager : IConfigManager
             try
             {
                 var json = JsonSerializer.Serialize(Config);
-                Console.WriteLine(json);                
+                File.WriteAllText(ConfigFilePath, json);                
             }
             catch (Exception e)
             {
