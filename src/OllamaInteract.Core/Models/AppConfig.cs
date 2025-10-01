@@ -14,6 +14,6 @@ public class AppConfig
     public string OllamaHost {get; set; }= "http://localhost";
 
     [JsonPropertyName("ollama_port")]
-    public int OllamaPort {get; set; }= 8000;
+    public int OllamaPort {get; set; }= 11434;
     
 }
