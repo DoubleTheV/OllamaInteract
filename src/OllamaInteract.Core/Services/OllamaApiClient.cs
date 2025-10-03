@@ -73,7 +73,7 @@ public class OllamaApiClient : IOllamaApiClient
     
     public async Task<bool> IsServerHealthyAsync()
     {
-        var response = await _httpClient.GetAsync($"{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/health");
+        var response = await _httpClient.GetAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/health");
 
         if (response.IsSuccessStatusCode)
         {
