@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace OllamaInteract.Core.Services;
 
@@ -21,7 +22,7 @@ public class ServerManager
 
         try
         {
-            var pythonScriptDirectory = GetPythonScriptDirectory(config.PythonServerDirectory);
+            var pythonScriptDirectory = GetFirstDirectory(config.PythonServerDirectory);
 
             if (pythonScriptDirectory == null)
             {
@@ -29,9 +30,11 @@ public class ServerManager
                 return false;
             }
 
+            var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+
             var startInfo = new ProcessStartInfo
             {
-                FileName = config.PythonExectuable,
+                FileName = GetVenvPythonPath(venvDirectory),
                 Arguments = $"-m uvicorn app.main:app --host {config.PythonHost} --port {config.PythonPort} --reload",
                 WorkingDirectory = Path.GetDirectoryName(pythonScriptDirectory),
                 UseShellExecute = false,
@@ -119,6 +122,7 @@ public class ServerManager
             return false;
         }
 
+        await EnsureVenvReadyAsync();
         return await StartPythonServerAsync();
     }
 
@@ -134,7 +138,7 @@ public class ServerManager
         }
     }
 
-    private string? GetPythonScriptDirectory(string[] directories)
+    private string? GetFirstDirectory(string[] directories)
     {
         foreach (var directory in directories)
         {
@@ -144,6 +148,191 @@ public class ServerManager
             }
         }
         return null;
+    }
+
+    private string? GetFirstFilePath(string[] paths)
+    {
+        foreach (var path in paths)
+        {
+            if (File.Exists(Path.Join(Directory.GetCurrentDirectory(), path)))
+            {
+                return path;
+            }
+        }
+        return null;
+    }
+
+    private async Task<bool> EnsureVenvReadyAsync()
+    {
+        var config = _configManager.Config;
+
+        var venvExists = CheckVenvExists(GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First());
+        if (!venvExists)
+        {
+            Console.WriteLine("No python virtual environment");
+            if(!await CreateVenvAsync())
+            {
+                return false;
+            }
+        }
+
+        var venvDependencies = await CheckVenvDependenciesAsync();
+        if (!venvDependencies)
+        {
+            Console.WriteLine("Python dependencies check failed");
+            venvDependencies = await InstallVenvDependenciesAsync();
+        }
+
+        return venvDependencies;
+    }
+
+    private async Task<bool> CreateVenvAsync()
+    {
+        var config = _configManager.Config;
+        try
+        {
+            string venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+            Directory.CreateDirectory(venvDirectory);
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = config.PythonExectuable,
+                Arguments = $"-m venv \"{venvDirectory}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+
+            var venvCreationProcess = Process.Start(startInfo);
+            if (venvCreationProcess == null)
+            {
+                return false;
+            }
+
+            string output = await venvCreationProcess.StandardOutput.ReadToEndAsync();
+            string error = await venvCreationProcess.StandardError.ReadToEndAsync();
+
+            await venvCreationProcess.WaitForExitAsync();
+            if (venvCreationProcess.ExitCode == 0)
+            {
+                Console.WriteLine("Python virtual environment was created successfully");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Failed to create python virtual environment: {error}");
+                return false;
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Issue creating python virtual environment: {e.Message}");
+            return false;
+        }
+    }
+
+    private async Task<bool> CheckVenvDependenciesAsync()
+    {
+        var config = _configManager.Config;
+        var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+
+        if (!CheckVenvExists(venvDirectory))
+        {
+            Console.WriteLine("Failed to find venv");
+            return false;
+        }
+        try
+        {
+            string checkScript = @"
+try:
+    import fastapi
+    import uvicorn
+    import ollama
+    print('success')
+except ImportError as e:
+    print(f'Missing: {e}')
+    exit(1)
+            ";
+
+            var tempFile = Path.GetTempFileName() + ".py";
+            await File.WriteAllTextAsync(tempFile, checkScript);
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = GetVenvPythonPath(venvDirectory),
+                Arguments = $"\"{tempFile}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+
+            var dependencyCheckProcess = Process.Start(startInfo);
+            if (dependencyCheckProcess == null)
+            {
+                return false;
+            }
+
+            string output = await dependencyCheckProcess.StandardOutput.ReadToEndAsync();
+            string error = await dependencyCheckProcess.StandardError.ReadToEndAsync();
+
+            await dependencyCheckProcess.WaitForExitAsync();
+
+            Console.WriteLine(output);
+            if (dependencyCheckProcess.ExitCode == 0)
+            {
+                Console.WriteLine("All dependencies are installed");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Dependencies are not installed: {output}");
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error occured when checking dependencies: {e.Message}");
+            return false;
+        }
+    }
+    
+    private string GetVenvPythonPath(string venvDirectory)
+    {
+        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+        {
+            return Path.Combine(venvDirectory, "Scripts", "python.exe");
+        }
+        else
+        {
+            return Path.Combine(venvDirectory, "bin", "python");            
+        }
+    }
+    
+    private async Task<bool> InstallVenvDependenciesAsync()
+    {
+        return false;
+    }
+
+    private bool CheckVenvExists(string venvDirectory)
+    {
+        if (string.IsNullOrEmpty(venvDirectory) || !Directory.Exists(venvDirectory))
+        {
+            return false;
+        }
+
+        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+        {
+            return File.Exists(Path.Combine(venvDirectory, "Scripts", "python.exe")) &&
+                File.Exists(Path.Combine(venvDirectory, "bin", "pip"));
+        }
+        else
+        {
+            return File.Exists(Path.Combine(venvDirectory, "bin", "python")) &&
+                File.Exists(Path.Combine(venvDirectory, "bin", "pip"));
+        }
     }
 
     private async Task<bool> WaitForServerAsync(TimeSpan timeout)
