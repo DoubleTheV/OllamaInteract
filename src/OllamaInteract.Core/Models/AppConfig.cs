@@ -13,6 +13,13 @@ public class AppConfig
     [JsonPropertyName("python_executable")]
     public string PythonExectuable { get; set; } = "python";
 
+    [JsonPropertyName("python_venv_directory")]
+    public string[] PythonVenvDirectory { get; set; } = {"/Python/.venv", "../../.venv"};
+
+
+    [JsonPropertyName("python_requirements_directory")] // relative to .exe // release primary and fallback to production
+    public string[] PythonRequirementsDirectory { get; set; } = {"/Python/", "../../"};
+
     [JsonPropertyName("python_server_host")]
     public string PythonHost { get; set; } = "http://localhost";
 
