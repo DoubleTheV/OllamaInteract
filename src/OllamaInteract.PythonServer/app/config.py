@@ -1,10 +1,10 @@
 import json
 
-class AppConfig:
+class config:
     def __init__(self):
-        self.python_server_host = "http://localhost"
+        self.python_server_host = "localhost"
         self.python_server_port = 8000
-        self.ollama_host = "http://localhost"
+        self.ollama_host = "localhost"
         self.ollama_port = 11434
 
 

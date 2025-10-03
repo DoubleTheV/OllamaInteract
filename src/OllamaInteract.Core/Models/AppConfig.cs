@@ -21,13 +21,13 @@ public class AppConfig
     public string[] PythonRequirementsDirectory { get; set; } = {"/Python/", "../../"};
 
     [JsonPropertyName("python_server_host")]
-    public string PythonHost { get; set; } = "http://localhost";
+    public string PythonHost { get; set; } = "localhost";
 
     [JsonPropertyName("python_server_port")]
     public int PythonPort { get; set; } = 8000;
 
     [JsonPropertyName("ollama_host")]
-    public string OllamaHost { get; set; } = "http://localhost";
+    public string OllamaHost { get; set; } = "localhost";
 
     [JsonPropertyName("ollama_port")]
     public int OllamaPort { get; set; } = 11434;
