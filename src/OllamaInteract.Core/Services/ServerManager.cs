@@ -16,6 +16,51 @@ public class ServerManager
         _ollamaClient = ollamaClient;
     }
 
+    public async Task<bool> EnsureServerRunningAsync()
+    {
+        var config = _configManager.Config;
+
+        bool isAlreadyRunning = await CheckServerHealthAsync();
+        if (isAlreadyRunning)
+        {
+            Console.WriteLine("Server is already running");
+            return true;
+        }
+
+        if (!config.PythonRunOnStartup)
+        {
+            Console.WriteLine("Auto-start disabled in config");
+            return false;
+        }
+
+        await EnsureVenvReadyAsync();
+        return await StartPythonServerAsync();
+    }
+
+    private async Task<bool> EnsureVenvReadyAsync()
+    {
+        var config = _configManager.Config;
+
+        var venvExists = CheckVenvExists(GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First());
+        if (!venvExists)
+        {
+            Console.WriteLine("No python virtual environment");
+            if (!await CreateVenvAsync())
+            {
+                return false;
+            }
+        }
+
+        var venvDependencies = await CheckVenvDependenciesAsync();
+        if (!venvDependencies)
+        {
+            Console.WriteLine("Python dependencies check failed");
+            venvDependencies = await InstallVenvDependenciesAsync();
+        }
+
+        return venvDependencies;
+    }
+
     public async Task<bool> StartPythonServerAsync()
     {
         var config = _configManager.Config;
@@ -60,6 +105,9 @@ public class ServerManager
                 }
             };
 
+            Console.WriteLine($"Starting python server on {config.PythonHost}:{config.PythonHost}");
+            Console.WriteLine($"{GetVenvPythonPath(venvDirectory)} {startInfo.Arguments}. Working directory: {startInfo.WorkingDirectory}");
+
             _pythonServerProcess.Start();
             _pythonServerProcess.BeginOutputReadLine();
             _pythonServerProcess.BeginErrorReadLine();
@@ -68,7 +116,7 @@ public class ServerManager
 
             if (isReady)
             {
-                Console.WriteLine($"Python server started successfully on port {config.PythonPort}");
+                Console.WriteLine($"Python server started successfully on {config.PythonHost}:{config.PythonPort}");
                 return true;
             }
             else
@@ -92,7 +140,7 @@ public class ServerManager
         {
             if (_pythonServerProcess != null && !_pythonServerProcess.HasExited)
             {
-                _pythonServerProcess.Kill();
+                _pythonServerProcess.Kill(entireProcessTree: true);
                 _pythonServerProcess.WaitForExit(5000);
                 _pythonServerProcess.Dispose();
                 _pythonServerProcess = null;
@@ -105,85 +153,23 @@ public class ServerManager
         }
     }
 
-    public async Task<bool> EnsureServerRunningAsync()
+    private static bool CheckVenvExists(string venvDirectory)
     {
-        var config = _configManager.Config;
-
-        bool isAlreadyRunning = await CheckServerHealthAsync();
-        if (isAlreadyRunning)
+        if (string.IsNullOrEmpty(venvDirectory) || !Directory.Exists(venvDirectory))
         {
-            Console.WriteLine("Server is already running");
-            return true;
-        }
-
-        if (!config.PythonRunOnStartup)
-        {
-            Console.WriteLine("Auto-start disabled in config");
             return false;
         }
 
-        await EnsureVenvReadyAsync();
-        return await StartPythonServerAsync();
-    }
-
-    public async Task<bool> CheckServerHealthAsync()
-    {
-        try
+        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
         {
-            return await _ollamaClient.IsServerHealthyAsync();
+            return File.Exists(Path.Combine(venvDirectory, "Scripts", "python.exe")) &&
+                File.Exists(Path.Combine(venvDirectory, "bin", "pip"));
         }
-        catch
+        else
         {
-            return false;
+            return File.Exists(Path.Combine(venvDirectory, "bin", "python")) &&
+                File.Exists(Path.Combine(venvDirectory, "bin", "pip"));
         }
-    }
-
-    private string? GetFirstDirectory(string[] directories)
-    {
-        foreach (var directory in directories)
-        {
-            if (Directory.Exists(Path.Join(Directory.GetCurrentDirectory(), directory)))
-            {
-                return directory;
-            }
-        }
-        return null;
-    }
-
-    private string? GetFirstFilePath(string[] paths)
-    {
-        foreach (var path in paths)
-        {
-            if (File.Exists(Path.Join(Directory.GetCurrentDirectory(), path)))
-            {
-                return path;
-            }
-        }
-        return null;
-    }
-
-    private async Task<bool> EnsureVenvReadyAsync()
-    {
-        var config = _configManager.Config;
-
-        var venvExists = CheckVenvExists(GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First());
-        if (!venvExists)
-        {
-            Console.WriteLine("No python virtual environment");
-            if(!await CreateVenvAsync())
-            {
-                return false;
-            }
-        }
-
-        var venvDependencies = await CheckVenvDependenciesAsync();
-        if (!venvDependencies)
-        {
-            Console.WriteLine("Python dependencies check failed");
-            venvDependencies = await InstallVenvDependenciesAsync();
-        }
-
-        return venvDependencies;
     }
 
     private async Task<bool> CreateVenvAsync()
@@ -298,7 +284,12 @@ except ImportError as e:
             return false;
         }
     }
-    
+
+    private async Task<bool> InstallVenvDependenciesAsync()
+    {
+        return false;
+    }
+
     private string GetVenvPythonPath(string venvDirectory)
     {
         if (Environment.OSVersion.Platform == PlatformID.Win32NT)
@@ -311,28 +302,28 @@ except ImportError as e:
         }
     }
     
-    private async Task<bool> InstallVenvDependenciesAsync()
+    private static string? GetFirstDirectory(string[] directories)
     {
-        return false;
+        foreach (var directory in directories)
+        {
+            if (Directory.Exists(Path.Join(Directory.GetCurrentDirectory(), directory)))
+            {
+                return directory;
+            }
+        }
+        return null;
     }
 
-    private bool CheckVenvExists(string venvDirectory)
+    private static string? GetFirstFilePath(string[] paths)
     {
-        if (string.IsNullOrEmpty(venvDirectory) || !Directory.Exists(venvDirectory))
+        foreach (var path in paths)
         {
-            return false;
+            if (File.Exists(Path.Join(Directory.GetCurrentDirectory(), path)))
+            {
+                return path;
+            }
         }
-
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-        {
-            return File.Exists(Path.Combine(venvDirectory, "Scripts", "python.exe")) &&
-                File.Exists(Path.Combine(venvDirectory, "bin", "pip"));
-        }
-        else
-        {
-            return File.Exists(Path.Combine(venvDirectory, "bin", "python")) &&
-                File.Exists(Path.Combine(venvDirectory, "bin", "pip"));
-        }
+        return null;
     }
 
     private async Task<bool> WaitForServerAsync(TimeSpan timeout)
@@ -349,6 +340,18 @@ except ImportError as e:
         }
 
         return false;
+    }
+
+    public async Task<bool> CheckServerHealthAsync()
+    {
+        try
+        {
+            return await _ollamaClient.IsServerHealthyAsync();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public void Dispose()
