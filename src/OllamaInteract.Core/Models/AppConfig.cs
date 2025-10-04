@@ -17,8 +17,8 @@ public class AppConfig
     public string[] PythonVenvDirectory { get; set; } = {"/Python/.venv", "../../.venv"};
 
 
-    [JsonPropertyName("python_requirements_directory")] // relative to .exe // release primary and fallback to production
-    public string[] PythonRequirementsDirectory { get; set; } = {"/Python/", "../../"};
+    [JsonPropertyName("python_requirements_path")] // relative to .exe // release primary and fallback to production
+    public string[] PythonRequirementsDirectory { get; set; } = {"/Python/requirements.txt", "../../requirements.txt"};
 
     [JsonPropertyName("python_server_host")]
     public string PythonHost { get; set; } = "localhost";

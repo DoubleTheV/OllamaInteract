@@ -287,7 +287,73 @@ except ImportError as e:
 
     private async Task<bool> InstallVenvDependenciesAsync()
     {
-        return false;
+        var config = _configManager.Config;
+        var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+
+        if (!CheckVenvExists(venvDirectory))
+        {
+            Console.WriteLine("Failed to find venv");
+            return false;
+        }
+
+        try
+        {
+            var requirementsFile = GetFirstFilePath(config.PythonRequirementsDirectory);
+            if (string.IsNullOrEmpty(requirementsFile))
+            {
+                Console.WriteLine("Requirements file not found");
+                return false;
+            }
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = GetVenvPipPath(venvDirectory),
+                Arguments = $"install -r \"{requirementsFile}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+
+            var dependenciesInstallProcess = new Process() { StartInfo = startInfo };
+
+            dependenciesInstallProcess.OutputDataReceived += (sender, e) =>
+            {
+                if(!string.IsNullOrEmpty(e.Data))
+                {
+                    Console.WriteLine($"[pip]: {e.Data}");
+                }
+            };
+            dependenciesInstallProcess.ErrorDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    Console.WriteLine($"[pip Error]: {e.Data}");
+                }
+            };
+
+            dependenciesInstallProcess.Start();
+            dependenciesInstallProcess.BeginOutputReadLine();
+            dependenciesInstallProcess.BeginErrorReadLine();
+
+            await dependenciesInstallProcess.WaitForExitAsync();
+
+            if (dependenciesInstallProcess.ExitCode == 0)
+            {
+                Console.WriteLine("Python dependency installation was completed successfully");
+                return false;
+            }
+            else
+            {
+                Console.WriteLine("Something went wrong during installing python dependencies");
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error installing python dependencies: {e.Message}");
+            return false;
+        }
     }
 
     private string GetVenvPythonPath(string venvDirectory)
@@ -299,6 +365,17 @@ except ImportError as e:
         else
         {
             return Path.Combine(venvDirectory, "bin", "python");            
+        }
+    }
+    private string GetVenvPipPath(string venvDirectory)
+    {
+        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+        {
+            return Path.Combine(venvDirectory, "Scripts", "pip");
+        }
+        else
+        {
+            return Path.Combine(venvDirectory, "bin", "pip");            
         }
     }
     
