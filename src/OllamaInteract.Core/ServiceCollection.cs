@@ -5,7 +5,7 @@ namespace OllamaInteract.Core;
 
 public static class ServiceCollection
 {
-    public static IServiceCollection AddOllamaServices(this IServiceCollection services)
+    public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         services.AddHttpClient<IOllamaApiClient, OllamaApiClient>();
         services.AddSingleton<IConfigManager, ConfigManager>();
