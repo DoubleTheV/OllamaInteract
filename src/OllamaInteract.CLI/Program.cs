@@ -9,8 +9,12 @@ var ollamaClient = new OllamaApiClient(httpClient);
 
 var configManager = new ConfigManager();
 
+var serverManager = new ServerManager(configManager, ollamaClient);
+
 try
 {
+    configManager.ResetToDefault();
+    Console.WriteLine($"Server running? - {await serverManager.EnsureServerRunningAsync()}");
     Console.WriteLine($"Server healthy? - {await ollamaClient.IsServerHealthyAsync()}");
     Console.WriteLine("Available Models:");
     var models = await ollamaClient.GetAvailableModelsAsync();
@@ -29,33 +33,26 @@ try
         Console.WriteLine($"    TestMessage: {request.Message} \n   Answer: {answer.Response} \n    Time elapsed: {answer.ResponseTime / 1000}s");
     }
     Console.WriteLine("Config check");
-    try
-    {
-        Console.WriteLine($"    Config: {configManager.Config}");
-        configManager.UpdateConfig(c => c.OllamaPort = 696969);
-        Console.WriteLine($"    Update check: {configManager.Config.OllamaPort == 696969}");
-        configManager.SaveConfig();
-        configManager.LoadConfig();
-        Console.WriteLine($"    Update check: {configManager.Config.OllamaPort == 696969}");
-        configManager.ResetToDefault();
-        Console.WriteLine($"    Update check: {configManager.Config.OllamaPort != 696969}");
-        configManager.SaveConfig();
-        configManager.LoadConfig();
-        Console.WriteLine($"    Update check: {configManager.Config.OllamaPort != 696969}");
-        configManager.SaveConfig();
+    configManager.UpdateConfig(c => c.OllamaPort = 696969);
+    Console.WriteLine($"    Update check: {configManager.Config.OllamaPort == 696969}");
+    configManager.SaveConfig();
+    configManager.LoadConfig();
+    Console.WriteLine($"    Update check: {configManager.Config.OllamaPort == 696969}");
+    configManager.ResetToDefault();
+    Console.WriteLine($"    Update check: {configManager.Config.OllamaPort != 696969}");
+    configManager.SaveConfig();
+    configManager.LoadConfig();
+    Console.WriteLine($"    Update check: {configManager.Config.OllamaPort != 696969}");
+    configManager.SaveConfig();
 
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine($"    Config check error: {e.Message}");
-    }
+    serverManager.Dispose();
 
     Console.WriteLine("=======================");
     Console.WriteLine("Test Completed Successfully!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("=======================");
-        Console.WriteLine($"Exception: {ex.Message}");
-        Console.WriteLine($"StackTrace: {ex.StackTrace}");
-    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine("=======================");
+    Console.WriteLine($"Exception: {ex.Message}");
+    Console.WriteLine($"StackTrace: {ex.StackTrace}");
+}
