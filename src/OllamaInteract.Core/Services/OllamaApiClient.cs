@@ -19,7 +19,7 @@ public class OllamaApiClient : IOllamaApiClient
 
     public async Task<List<AvailableModel>> GetAvailableModelsAsync()
     {
-        var response = await _httpClient.GetAsync($"{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/models");
+        var response = await _httpClient.GetAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/models");
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadFromJsonAsync<AvailableModelsResponse>();
@@ -38,7 +38,7 @@ public class OllamaApiClient : IOllamaApiClient
         {
             var startTime = DateTime.Now;
 
-            var response = await _httpClient.PostAsJsonAsync($"{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/chat", chatRequest);
+            var response = await _httpClient.PostAsJsonAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/chat", chatRequest);
 
             if (response.IsSuccessStatusCode)
             {
