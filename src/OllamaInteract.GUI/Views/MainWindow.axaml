@@ -16,6 +16,16 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="Border.ChatBubble">
+            <Setter Property="Background" Value="#212529"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+        <!-- To add user-right, AI-left snapping pseudoclasses -->
+    </Window.Styles>
+
     <Grid ColumnDefinitions="Auto, *" Margin="10">
         <Border Grid.Column="0" Margin="5" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" MinWidth="150" MaxWidth="200">
             <StackPanel>
@@ -24,8 +34,13 @@
         </Border>
         <Grid Grid.Column="1" RowDefinitions="*, Auto">
             <Border Grid.Row="0" Margin="5" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
                     <StackPanel>
+                        <!--
+                        <Border Classes="ChatBubble">
+                            <TextBlock>Placeholder</TextBlock>
+                        </Border>
+                        -->
                     </StackPanel>
                 </ScrollViewer>
             </Border>
