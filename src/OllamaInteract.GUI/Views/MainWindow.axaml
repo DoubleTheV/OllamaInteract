@@ -17,24 +17,26 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
     <Grid ColumnDefinitions="Auto, *" Margin="10">
-        <StackPanel Grid.Column="0" Margin="0,0,5,0">
-            <TextBlock Text="Conversations" Margin="5"/>
-        </StackPanel>
-        <DockPanel Grid.Column="1" LastChildFill="False">
-            <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" Margin="5">
-                <StackPanel>
-                </StackPanel>
-            </ScrollViewer>
-            <Border DockPanel.Dock="Bottom" Margin="10" MinHeight="100" MaxHeight="150">
-                <Grid  ColumnDefinitions="*, Auto">
-                    <TextBox Grid.Column="0">
-
-                    </TextBox>
-                    <Button Content="Send" Grid.Column="1">
-                        
-                    </Button>
-                </Grid>
+        <Border Grid.Column="0" Margin="5" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" MinWidth="150" MaxWidth="200">
+            <StackPanel>
+                <TextBlock Text="Conversations: TO-DO" Margin="5"/>
+            </StackPanel>
+        </Border>
+        <Grid Grid.Column="1" RowDefinitions="*, Auto">
+            <Border Grid.Row="0" Margin="5" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
-        </DockPanel>
+            <Grid Grid.Row="1" Margin="10" MinHeight="100" MaxHeight="150"
+                ColumnDefinitions="*, Auto">
+                <TextBox Grid.Column="0" CornerRadius="8" BorderBrush="Transparent" Background="#212529" Margin="0,0,15,0">
+                </TextBox>
+                <Button Content="Send" Grid.Column="1">
+                    
+                </Button>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>
