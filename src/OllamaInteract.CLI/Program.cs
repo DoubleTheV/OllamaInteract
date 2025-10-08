@@ -30,7 +30,7 @@ try
         request.Model = models[0].Name;
 
         var answer = await ollamaClient.SendChatAsync(request);
-        Console.WriteLine($"    TestMessage: {request.Message} \n   Answer: {answer.Response} \n    Time elapsed: {answer.ResponseTime / 1000}s");
+        Console.WriteLine($"    TestMessage: {request.Message} \n   Answer: {answer.Message} \n    Time elapsed: {answer.ResponseTime / 1000}s");
     }
     Console.WriteLine("Config check");
     configManager.UpdateConfig(c => c.OllamaPort = 696969);

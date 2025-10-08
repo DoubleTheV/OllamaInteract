@@ -12,7 +12,7 @@ async def chat_endpoint(request: Request):
         return {
             "success": True,
             "model": body.get('model'),
-            "response": response,
+            "message": response,
             "error": None
         }
     except Exception as e:
