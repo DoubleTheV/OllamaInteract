@@ -26,8 +26,14 @@
             <Setter Property="MaxWidth" Value="600" />
             <Setter Property="MinWidth" Value="400" />
         </Style>
-        <Style Selector="Border.ChatBubble TextBlock">
+        <Style Selector="Border.ChatBubble TextBlock.Content">
             <Setter Property="FontSize" Value="20" />
+        </Style>
+        <Style Selector="Border.ChatBubble TextBlock.Timestamp">
+            <Setter Property="Foreground" Value="Gray" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0,5,5,0" />
         </Style>
         <Style Selector="Border.ChatBubble.UserMessage">
             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -52,7 +58,10 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Classes.ChatBubble = "True" Classes.UserMessage="{Binding fromUser}" Classes.AIMessage="{Binding !fromUser}">
-                                        <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+                                        <StackPanel>
+                                            <TextBlock Classes="Content" Text="{Binding Message}" TextWrapping="Wrap"/>
+                                            <TextBlock Classes="Timestamp" Text="{Binding TimeStamp}" TextWrapping="Wrap"/>
+                                        </StackPanel>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
