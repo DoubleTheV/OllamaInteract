@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using OllamaInteract.Core.Models;
 using OllamaInteract.Core.Services;
 
 namespace OllamaInteract.GUI.ViewModels;
@@ -24,7 +28,10 @@ public partial class MainWindowViewModel : ViewModelBase
     private bool _isConnected = false;
     [ObservableProperty]
     private string _statusMessage = string.Empty;
+    [ObservableProperty]
+    private string _userInput = string.Empty;
 
+    public ObservableCollection<ChatMessage> ChatHistory { get; set; } = new ObservableCollection<ChatMessage>();
 
     private async Task InitializeAsync()
     {
@@ -44,7 +51,7 @@ public partial class MainWindowViewModel : ViewModelBase
             StatusMessage = $"Initialization failed: {e.Message}";
         }
     }
-    
+
     private async Task ConnectToServerAsync()
     {
         StatusMessage = "Connecting to server";
@@ -69,5 +76,39 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
 
+    }
+
+    [RelayCommand]
+    public async Task SendMessageAsync()
+    {
+        if (string.IsNullOrEmpty(UserInput))
+        {
+            return;
+        }
+
+        var userMessage = UserInput;
+        UserInput = string.Empty;
+
+        try
+        {
+            var models = await _ollamaClient.GetAvailableModelsAsync();
+
+            var request = new ChatRequest();
+            request.Message = userMessage;
+            request.Model = models.First().Name;
+
+            ChatHistory.Add(request);
+
+            var response = await _ollamaClient.SendChatAsync(request);
+
+            if(response.Success)
+            {
+                ChatHistory.Add(response);
+            }
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error occured when sending / recieving a message: {e.Message}";
+        }
     }
 }
