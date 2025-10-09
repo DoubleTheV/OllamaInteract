@@ -3,7 +3,7 @@ namespace OllamaInteract.Core.Models;
 public class ChatMessage
 {
     public string Message { get; set; } = string.Empty;
-    public string TimeStamp { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd HH-mm-ss");
+    public string TimeStamp { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
     public bool fromUser { get; set; }
 }
 
