@@ -4,7 +4,6 @@ using OllamaInteract.CLI.Services;
 
 namespace OllamaInteract.CLI;
 
-
 public class Program
 {
     static async Task Main(string[] args)

@@ -1,5 +1,3 @@
-using System.Net.NetworkInformation;
-using System.Runtime.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OllamaInteract.CLI.Services;
 

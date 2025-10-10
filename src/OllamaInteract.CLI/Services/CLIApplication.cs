@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using OllamaInteract.Core.Services;
 
 namespace OllamaInteract.CLI.Services;
