@@ -32,6 +32,30 @@ public partial class MainWindowViewModel : ViewModelBase
     private string _userInput = string.Empty;
 
     public ObservableCollection<ChatMessage> ChatHistory { get; set; } = new ObservableCollection<ChatMessage>();
+    private ObservableCollection<AvailableModel> _availableModels = new ObservableCollection<AvailableModel>();
+    public ObservableCollection<AvailableModel> AvailableModels
+    {
+        get => _availableModels;
+        set
+        {
+            if (_availableModels != value)
+            {
+                _availableModels = value;
+                OnPropertyChanged(nameof(AvailableModels));
+            }
+        }
+    }
+
+    private AvailableModel _selectedModel = new AvailableModel() {Name="None"};
+    public AvailableModel SelectedModel
+    {
+        get => _selectedModel;
+        set
+        {
+            _selectedModel = value;
+            OnPropertyChanged(nameof(SelectedModel));
+        }
+    }
 
     private async Task InitializeAsync()
     {
@@ -45,6 +69,18 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 StatusMessage = "Successfully connected to Ollama";
             }
+
+            await GetAvailableModelsAsync();
+
+            if (AvailableModels.Count > 0)
+            {
+                SelectedModel = AvailableModels.First();
+                StatusMessage = "Loaded available models";
+            }
+
+            await Task.Delay(1000);
+
+            StatusMessage = "Successfully initialized";
         }
         catch (Exception e)
         {
@@ -78,6 +114,22 @@ public partial class MainWindowViewModel : ViewModelBase
 
     }
 
+    private async Task GetAvailableModelsAsync()
+    {
+        StatusMessage = "Requesting available models";
+
+        try
+        {
+            var models = await _ollamaClient.GetAvailableModelsAsync();
+
+            AvailableModels = new ObservableCollection<AvailableModel>(models);
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error when getting available models: {e.Message}";
+        }
+    }
+
     [RelayCommand]
     public async Task SendMessageAsync()
     {
@@ -95,7 +147,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var request = new ChatRequest();
             request.Message = userMessage;
-            request.Model = models.First().Name;
+            request.Model = SelectedModel.Name;
 
             ChatHistory.Add(request);
 
