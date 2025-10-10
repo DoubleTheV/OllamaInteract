@@ -3,7 +3,7 @@ using OllamaInteract.Core.Services;
 
 namespace OllamaInteract.Core;
 
-public static class ServiceCollection
+public static class CoreServiceCollection
 {
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
