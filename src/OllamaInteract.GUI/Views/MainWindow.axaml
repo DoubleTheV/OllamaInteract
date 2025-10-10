@@ -52,14 +52,19 @@
         <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto, Auto">
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10">
                 <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Conversation Name" />
-                <ComboBox Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" MinWidth="100" MaxWidth="250" 
-                        ItemsSource="{Binding AvailableModels}" SelectedItem="{Binding SelectedModel}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Text="Model: " FontSize="16" />
+                    <ComboBox HorizontalAlignment="Right" VerticalAlignment="Center" MinWidth="100" MaxWidth="250" 
+                            ItemsSource="{Binding AvailableModels}" SelectedItem="{Binding SelectedModel}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" FontSize="16"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
             </Grid>
             <Border Grid.Row="1" Margin="5" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -83,7 +88,7 @@
             <Grid Grid.Row="3" Margin="10" MinHeight="100" MaxHeight="150"
                 ColumnDefinitions="*, Auto">
                 <TextBox Grid.Column="0" CornerRadius="8" BorderBrush="Transparent" Background="#212529" Margin="0,0,15,0"
-                    IsEnabled="{Binding IsConnected}" Text="{Binding UserInput}">
+                    IsEnabled="{Binding IsConnected}" Text="{Binding UserInput}" TextWrapping="Wrap">
                 </TextBox>
                 <Button Content="Send" Grid.Column="1" IsEnabled="{Binding IsConnected}" Command="{Binding SendMessageCommand}" />
             </Grid>
