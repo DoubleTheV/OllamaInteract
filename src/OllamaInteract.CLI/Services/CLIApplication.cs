@@ -1,4 +1,6 @@
+using System.Text;
 using OllamaInteract.Core.Services;
+using Spectre.Console;
 
 namespace OllamaInteract.CLI.Services;
 
@@ -24,6 +26,41 @@ public class CLIApplication
 
     public async Task RunAsync(string[] args)
     {
-        Console.WriteLine("CLI Application started successfully.");
+        await RenderLiveDisplay();
+    }
+
+    private async Task RenderLiveDisplay()
+    {
+        await AnsiConsole.Live(new Layout("Root"))
+            .AutoClear(true)
+            .Overflow(VerticalOverflow.Ellipsis)
+            .StartAsync(async ctx =>
+            {
+                while(true)
+                {
+                    var layout = CreateLayout();
+                    ctx.UpdateTarget(layout);
+                    ctx.Refresh();
+
+                    await Task.Delay(33);
+                }
+            }
+            );
+    }
+    
+    private Layout CreateLayout()
+    {
+        var layout = new Layout("Root")
+            .SplitColumns(
+                new Layout("Conversations").Ratio(1),
+                new Layout("Main").Ratio(3)
+                    .SplitRows(
+                        new Layout("Header").Ratio(1),
+                        new Layout("Content").Ratio(7),
+                        new Layout("Input").Ratio(2)
+                    )
+            );
+
+        return layout;
     }
 }
