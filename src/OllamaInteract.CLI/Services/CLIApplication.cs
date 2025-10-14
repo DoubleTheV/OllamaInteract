@@ -55,11 +55,45 @@ public class CLIApplication
                 new Layout("Conversations").Ratio(1),
                 new Layout("Main").Ratio(3)
                     .SplitRows(
-                        new Layout("Header").Ratio(1),
-                        new Layout("Content").Ratio(7),
-                        new Layout("Input").Ratio(2)
+                        new Layout("Header").Ratio(1)
+                            .SplitColumns(
+                                new Layout("ConversationName"),
+                                new Layout("ModelChosen")
+                            ),
+                        new Layout("Content").Ratio(8),
+                        new Layout("Input").Ratio(1)
                     )
             );
+
+        layout["Conversations"].Update(
+            new Panel(
+                new Text("Conversations")
+            ).Border(BoxBorder.Rounded).Expand()
+        );
+
+        layout["ConversationName"].Update(
+            new Panel(
+                new Text("Conversation Name").Justify(Justify.Left)
+            ).Border(BoxBorder.Rounded).Expand()
+        );
+        layout["ModelChosen"].Update(
+            new Panel(
+                new Text("Model: None").Justify(Justify.Right)
+            ).Border(BoxBorder.Rounded).Expand()
+        );
+
+        layout["Content"].Update(
+            new Panel(
+                new Text("")
+            ).Border(BoxBorder.Rounded).Expand()
+        );
+
+        layout["Input"].Update(
+            new Panel(
+                new Text("")
+            ).Border(BoxBorder.Rounded).Expand()
+        );
+
 
         return layout;
     }
