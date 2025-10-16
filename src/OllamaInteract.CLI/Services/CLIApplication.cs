@@ -16,6 +16,8 @@ public class CLIApplication
     private string Input = string.Empty;
 
     private bool _shouldRefresh = true;
+    private bool _isRunning = true;
+
     private enum Mode
     {
         NORMAL,
@@ -38,6 +40,8 @@ public class CLIApplication
         _serverManager = serverManager;
 
         _inputChannel = Channel.CreateUnbounded<ConsoleKeyInfo>();
+
+        BlockExit();
     }
 
     public async Task RunAsync(string[] args)
@@ -54,7 +58,7 @@ public class CLIApplication
             .Overflow(VerticalOverflow.Ellipsis)
             .StartAsync(async ctx =>
             {
-                while(true)
+                while(_isRunning)
                 {
                     while(_inputChannel.Reader.TryRead(out var key))
                     {
@@ -126,7 +130,7 @@ public class CLIApplication
 
     private async Task ReadInputAsync()
     {
-        while (true)
+        while (_isRunning)
         {
             try
             {
@@ -141,12 +145,25 @@ public class CLIApplication
             catch { break; }
         }
     }
-    
+
     private void HandleInput(ConsoleKeyInfo key)
     {
-        if(key.Key == ConsoleKey.Escape)
+        if (key.Key == ConsoleKey.Escape)
         {
             currentMode = Mode.NORMAL;
+            Input = string.Empty;
+            return;
+        }
+        if (key.Key == ConsoleKey.Enter)
+        {
+            if (Input.First() == ':')
+            {
+                HandleCommand();
+            }
+            else
+            {
+                HandlePrompt();
+            }
             Input = string.Empty;
             return;
         }
@@ -158,7 +175,12 @@ public class CLIApplication
                 {
                     currentMode = Mode.INPUT;
                 }
-                else if(key.Key == ConsoleKey.V)
+                else if(key.KeyChar == ':')
+                {
+                    currentMode = Mode.INPUT;
+                    Input = ":";
+                }
+                else if (key.Key == ConsoleKey.V)
                 {
                     currentMode = Mode.VISUAL;
                 }
@@ -169,7 +191,7 @@ public class CLIApplication
                 {
                     Input = Input.Substring(0, Input.Length - 1);
                 }
-                else if(key.Key != ConsoleKey.Backspace)
+                else if (key.Key != ConsoleKey.Backspace)
                 {
                     Input += key.KeyChar;
                     _shouldRefresh = true;
@@ -177,4 +199,29 @@ public class CLIApplication
                 break;
         }
     }
+
+    private void BlockExit()
+    {
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            e.Cancel = true;
+            Input = "[Use :q to close the app properly]";
+        };
+    }
+
+    private void HandleCommand()
+    {
+        switch(Input.Substring(1, Input.Length - 1))
+        {
+            case "q":
+                _isRunning = false;
+                break;
+        }
+    }
+    
+    private void HandlePrompt()
+    {
+        
+    }
+
 }
