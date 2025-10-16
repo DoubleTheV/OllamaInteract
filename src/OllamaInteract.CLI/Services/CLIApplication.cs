@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Channels;
 using OllamaInteract.Core.Services;
 using Spectre.Console;
 
@@ -10,6 +11,9 @@ public class CLIApplication
     private readonly IConfigManager _configManager;
     private readonly IOllamaApiClient _ollamaClient;
     private readonly ServerManager _serverManager;
+
+    private readonly Channel<ConsoleKeyInfo> _inputChannel;
+    private string Input = string.Empty;
 
     private bool _shouldRefresh = true;
     private enum Mode
@@ -32,10 +36,14 @@ public class CLIApplication
         _configManager = configManager;
         _ollamaClient = ollamaClient;
         _serverManager = serverManager;
+
+        _inputChannel = Channel.CreateUnbounded<ConsoleKeyInfo>();
     }
 
     public async Task RunAsync(string[] args)
     {
+        _ = Task.Run(ReadInputAsync);
+
         await RenderLiveDisplay();
     }
 
@@ -48,19 +56,24 @@ public class CLIApplication
             {
                 while(true)
                 {
-                    if(_shouldRefresh)
+                    while(_inputChannel.Reader.TryRead(out var key))
+                    {
+                        HandleInput(key);
+                    }
+
+                    if (_shouldRefresh)
                     {
                         var layout = CreateLayout();
                         ctx.UpdateTarget(layout);
                         ctx.Refresh();
                     }
 
-                    await Task.Delay(33);
+                    await Task.Delay(30);
                 }
             }
             );
     }
-    
+
     private Layout CreateLayout()
     {
         var layout = new Layout("Root")
@@ -103,11 +116,65 @@ public class CLIApplication
 
         layout["Input"].Update(
             new Panel(
-                new Text($"--{currentMode}--")
+                new Text($"--{currentMode}--\n{Input}")
             ).Border(BoxBorder.Rounded).Expand()
         );
 
 
         return layout;
+    }
+
+    private async Task ReadInputAsync()
+    {
+        while (true)
+        {
+            try
+            {
+                if (Console.KeyAvailable)
+                {
+                    var key = Console.ReadKey(intercept: true);
+                    await _inputChannel.Writer.WriteAsync(key);
+                }
+
+                await Task.Delay(15);
+            }
+            catch { break; }
+        }
+    }
+    
+    private void HandleInput(ConsoleKeyInfo key)
+    {
+        if(key.Key == ConsoleKey.Escape)
+        {
+            currentMode = Mode.NORMAL;
+            Input = string.Empty;
+            return;
+        }
+
+        switch (currentMode)
+        {
+            case Mode.NORMAL:
+                if (key.Key == ConsoleKey.I)
+                {
+                    currentMode = Mode.INPUT;
+                }
+                else if(key.Key == ConsoleKey.V)
+                {
+                    currentMode = Mode.VISUAL;
+                }
+                break;
+
+            case Mode.INPUT:
+                if (key.Key == ConsoleKey.Backspace && Input.Length > 0)
+                {
+                    Input = Input.Substring(0, Input.Length - 1);
+                }
+                else if(key.Key != ConsoleKey.Backspace)
+                {
+                    Input += key.KeyChar;
+                    _shouldRefresh = true;
+                }
+                break;
+        }
     }
 }
