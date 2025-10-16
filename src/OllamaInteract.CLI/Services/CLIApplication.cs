@@ -11,6 +11,16 @@ public class CLIApplication
     private readonly IOllamaApiClient _ollamaClient;
     private readonly ServerManager _serverManager;
 
+    private bool _shouldRefresh = true;
+    private enum Mode
+    {
+        NORMAL,
+        INPUT,
+        VISUAL
+    }
+    private Mode currentMode = Mode.NORMAL;
+    
+
     public CLIApplication(
         IServiceProvider serviceProvider,
         IConfigManager configManager,
@@ -38,9 +48,12 @@ public class CLIApplication
             {
                 while(true)
                 {
-                    var layout = CreateLayout();
-                    ctx.UpdateTarget(layout);
-                    ctx.Refresh();
+                    if(_shouldRefresh)
+                    {
+                        var layout = CreateLayout();
+                        ctx.UpdateTarget(layout);
+                        ctx.Refresh();
+                    }
 
                     await Task.Delay(33);
                 }
@@ -90,7 +103,7 @@ public class CLIApplication
 
         layout["Input"].Update(
             new Panel(
-                new Text("")
+                new Text($"--{currentMode}--")
             ).Border(BoxBorder.Rounded).Expand()
         );
 
