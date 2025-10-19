@@ -87,8 +87,8 @@ public class CLIApplication
                     .SplitRows(
                         new Layout("Header").Ratio(1)
                             .SplitColumns(
-                                new Layout("ConversationName"),
-                                new Layout("ModelChosen")
+                                new Layout("ConversationName").Ratio(1),
+                                new Layout("ModelChosen").Ratio(1)
                             ),
                         new Layout("Content").Ratio(8),
                         new Layout("Input").Ratio(1)
@@ -112,10 +112,19 @@ public class CLIApplication
             ).Border(BoxBorder.Rounded).Expand()
         );
 
+        var columnContent = new Rows(
+            new Columns(
+                new Panel(
+                    new Text("AI messages").Justify(Justify.Left)
+                ).Border(BoxBorder.None).Expand(),
+                new Panel(
+                    new Text("User messages").Justify(Justify.Right)
+                ).Border(BoxBorder.None).Expand()
+            )
+        );
+
         layout["Content"].Update(
-            new Panel(
-                new Text("")
-            ).Border(BoxBorder.Rounded).Expand()
+            new Panel(columnContent).Border(BoxBorder.Rounded).Expand()
         );
 
         layout["Input"].Update(
