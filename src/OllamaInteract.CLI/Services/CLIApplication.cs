@@ -1,5 +1,6 @@
 using System.Text;
 using System.Threading.Channels;
+using OllamaInteract.Core.Models;
 using OllamaInteract.Core.Services;
 using Spectre.Console;
 
@@ -13,10 +14,10 @@ public class CLIApplication
     private readonly ServerManager _serverManager;
 
     private readonly Channel<ConsoleKeyInfo> _inputChannel;
-    private string Input = string.Empty;
 
     private bool _shouldRefresh = true;
     private bool _isRunning = true;
+    private bool _isConnected = false;
 
     private enum Mode
     {
@@ -25,6 +26,10 @@ public class CLIApplication
         VISUAL
     }
     private Mode currentMode = Mode.NORMAL;
+    private string statusMessage = string.Empty;
+    private List<AvailableModel> availableModels = new List<AvailableModel>();
+    private AvailableModel currentModel = new AvailableModel() {Name = "None"};
+    private string Input = string.Empty;
     
 
     public CLIApplication(
@@ -46,9 +51,48 @@ public class CLIApplication
 
     public async Task RunAsync(string[] args)
     {
+        _ = Task.Run(InitializeAsync);
+
         _ = Task.Run(ReadInputAsync);
 
         await RenderLiveDisplay();
+
+        _serverManager.Dispose();
+    }
+
+    private async Task InitializeAsync()
+    {
+        statusMessage = "Initializing";
+
+        try
+        {
+            _isConnected = await _serverManager.EnsureServerRunningAsync();
+
+            if (_isConnected)
+            {
+                statusMessage = "Successfully connected to Ollama";
+            }
+            else
+            {
+                statusMessage = "Failed to connect to Python bridge-server";
+                return;
+            }
+
+            availableModels = await _ollamaClient.GetAvailableModelsAsync();
+
+            if (availableModels.Count > 0)
+            {
+                currentModel = availableModels.First();
+                statusMessage = "Loaded available models";
+            }
+
+            statusMessage = "Successfully initialized";
+        }
+        catch (Exception e)
+        {
+            statusMessage = $"Error during initialization: {e.Message}";
+            _isConnected = false;
+        }
     }
 
     private async Task RenderLiveDisplay()
@@ -108,7 +152,7 @@ public class CLIApplication
         );
         layout["ModelChosen"].Update(
             new Panel(
-                new Text("Model: None").Justify(Justify.Right)
+                new Text($"Model: {currentModel.Name}").Justify(Justify.Right)
             ).Border(BoxBorder.Rounded).Expand()
         );
 
@@ -129,8 +173,8 @@ public class CLIApplication
 
         layout["Input"].Update(
             new Panel(
-                new Text($"--{currentMode}--\n{Input}")
-            ).Border(BoxBorder.Rounded).Expand()
+                new Text($"{(currentMode == Mode.NORMAL? statusMessage : Input)}")
+            ).Header($"|{currentMode}|").Border(BoxBorder.Rounded).Expand()
         );
 
 
