@@ -8,7 +8,7 @@ ollama_client = OllamaClient()
 async def chat_endpoint(request: Request):
     try:
         body = await request.json()
-        response = await ollama_client.chat(body.get('content'), body.get('model'))
+        response = await ollama_client.chat(body.get('content'), body.get('model'), body.get('role'), body.get('messages'))
         return {
             "success": True,
             "model": body.get('model'),
