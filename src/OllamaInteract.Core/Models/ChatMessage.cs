@@ -2,9 +2,24 @@ namespace OllamaInteract.Core.Models;
 
 public class ChatMessage
 {
-    public string Message { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
     public string TimeStamp { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-    public bool fromUser { get; set; }
+    public string Role { get; protected set; } = "system";
+
+    public ChatMessage(){}
+
+    public ChatMessage(ChatRequest chatRequest)
+    {
+        Content = chatRequest.Content;
+        TimeStamp = chatRequest.TimeStamp;
+        Role = chatRequest.Role;
+    }
+    public ChatMessage(ChatResponse chatResponse)
+    {
+        Content = chatResponse.Content;
+        TimeStamp = chatResponse.TimeStamp;
+        Role = chatResponse.Role;
+    }
 }
 
 public class ChatRequest : ChatMessage
@@ -13,7 +28,7 @@ public class ChatRequest : ChatMessage
 
     public ChatRequest()
     {
-        fromUser = true;
+        Role = "user";
     }
 }
 
@@ -25,7 +40,7 @@ public class ChatResponse : ChatMessage
 
     public ChatResponse()
     {
-        fromUser = false;
+        Role = "assistant";
     }
 
 }
