@@ -145,16 +145,18 @@ public partial class MainWindowViewModel : ViewModelBase
         try
         {
             var request = new ChatRequest();
-            request.Message = userMessage;
+            request.Content = userMessage;
             request.Model = SelectedModel.Name;
+            request.Messages = ChatHistory.ToArray();
 
-            ChatHistory.Add(new ChatMessage(){Message = request.Message, fromUser = true});
+            var response = _ollamaClient.SendChatAsync(request);
 
-            var response = await _ollamaClient.SendChatAsync(request, new List<ChatMessage>(ChatHistory));
+            ChatHistory.Add(new ChatMessage(request));
 
-            if (response.Success)
+            await response;
+            if (response.IsCompletedSuccessfully)
             {
-                ChatHistory.Add(response);
+                ChatHistory.Add(response.Result);
             }
         }
         catch (Exception e)
