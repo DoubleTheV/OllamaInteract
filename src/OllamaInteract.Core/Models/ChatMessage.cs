@@ -1,9 +1,14 @@
+using System.Text.Json.Serialization;
+
 namespace OllamaInteract.Core.Models;
 
 public class ChatMessage
 {
+    [JsonPropertyName("content")]
     public string Content { get; set; } = string.Empty;
+    [JsonIgnore]
     public string TimeStamp { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+    [JsonPropertyName("role")]
     public string Role { get; protected set; } = "system";
 
     public ChatMessage(){}
@@ -25,6 +30,8 @@ public class ChatMessage
 public class ChatRequest : ChatMessage
 {
     public string Model { get; set; } = string.Empty;
+    [JsonPropertyName("messages")]
+    public ChatMessage[] Messages { get; set; } = [];
 
     public ChatRequest()
     {
