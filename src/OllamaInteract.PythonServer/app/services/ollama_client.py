@@ -17,10 +17,11 @@ class OllamaClient:
             logger.error(f"Failed to connect to Ollama: {e}")
             raise ConnectionError(f"Ollama server not available: {e}")
     
-    async def chat(self, message: str, model: str) -> str:
+    async def chat(self, content: str, model: str, role: str, history: List[Dict[str,str]]) -> str:
+        history.append({"role": role, "content": content})
         response = self.client.chat(
             model=model,
-            messages=[{"role": "user", "content": message}]
+            messages=history
         )
         return response['message']['content']
 

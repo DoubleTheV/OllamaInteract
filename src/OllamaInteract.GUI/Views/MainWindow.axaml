@@ -4,6 +4,7 @@
         xmlns:vm="using:OllamaInteract.GUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:OllamaInteract.GUI.Converters"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -16,6 +17,11 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
+
+    <Window.Resources>
+        <conv:RoleConverterUser x:Key="RoleConverterUser" />
+        <conv:RoleConverterAI x:Key="RoleConverterAI" />
+    </Window.Resources>
 
     <Window.Styles>
         <Style Selector="Border.ChatBubble">
@@ -72,9 +78,9 @@
                         <ItemsControl ItemsSource="{Binding ChatHistory}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Classes.ChatBubble = "True" Classes.UserMessage="{Binding fromUser}" Classes.AIMessage="{Binding !fromUser}">
+                                    <Border Classes.ChatBubble = "True" Classes.UserMessage="{Binding Role, Converter={StaticResource RoleConverterUser}}" Classes.AIMessage="{Binding Role, Converter={StaticResource RoleConverterAI}}">
                                         <StackPanel>
-                                            <TextBlock Classes="Content" Text="{Binding Message}" TextWrapping="Wrap"/>
+                                            <TextBlock Classes="Content" Text="{Binding Content}" TextWrapping="Wrap"/>
                                             <TextBlock Classes="Timestamp" Text="{Binding TimeStamp}" TextWrapping="Wrap"/>
                                         </StackPanel>
                                     </Border>

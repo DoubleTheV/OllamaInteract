@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -143,19 +144,19 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var models = await _ollamaClient.GetAvailableModelsAsync();
-
             var request = new ChatRequest();
-            request.Message = userMessage;
+            request.Content = userMessage;
             request.Model = SelectedModel.Name;
+            request.Messages = ChatHistory.ToArray();
 
-            ChatHistory.Add(request);
+            var response = _ollamaClient.SendChatAsync(request);
 
-            var response = await _ollamaClient.SendChatAsync(request);
+            ChatHistory.Add(new ChatMessage(request));
 
-            if(response.Success)
+            await response;
+            if (response.IsCompletedSuccessfully)
             {
-                ChatHistory.Add(response);
+                ChatHistory.Add(response.Result);
             }
         }
         catch (Exception e)
