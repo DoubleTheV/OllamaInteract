@@ -32,21 +32,10 @@ public class OllamaApiClient : IOllamaApiClient
     }
 
 
-    public async Task<ChatResponse> SendChatAsync(ChatRequest chatRequest, List<ChatMessage>? chatHistory = null)
+    public async Task<ChatResponse> SendChatAsync(ChatRequest chatRequest)
     {
         try
         {
-            string history = string.Empty;
-            if (chatHistory != null && chatHistory.Count > 0)
-            {
-                foreach (var message in chatHistory)
-                {
-                    history += (message.fromUser ? "Me: " : "AI: ") + message.Message + "\n";
-                }
-            }
-
-            chatRequest.Message = history;
-
             var startTime = DateTime.Now;
 
             var response = await _httpClient.PostAsJsonAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/chat", chatRequest);
