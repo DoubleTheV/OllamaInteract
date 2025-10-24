@@ -27,29 +27,21 @@ Download the [release](https://github.com/DoubleTheV/OllamaInteract/releases) (o
 Use [git](https://git-scm.com/downloads) to clone the repository and build the project using [dotnet](https://dotnet.microsoft.com/en-us/download).
 
 ```bash
+# Cloning the repository
 git clone https://github.com/DoubleTheV/OllamaInteract.git
-
-## In terminal 1: # It will run python server
-# Go into the cloned folder
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cd src/OllamaInteract.PythonServer
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-## In terminal 2: # It will build and run the client app
-# Go into the cloned folder
 
 cd OllamaInteract/src/OllamaInteract.CLI # for CLI
 
 cd OllamaInteract/src/OllamaInteract.GUI # for GUI
 
-dotnet build
-# Run the .exe in the /bin/Debug/net9.0
+# Running the software
+
+dotnet run
 
 # or
 
-dotnet run
+dotnet build
+# Run the executable in the /bin/Debug/net9.0
 ```
 
 ## Contributing
