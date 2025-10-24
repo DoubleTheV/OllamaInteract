@@ -1,0 +1,42 @@
+namespace OllamaInteract.Core.DataAccess;
+
+public static class SqlQueries
+{
+    public static readonly string InitializeDatabase = @"
+        CREATE TABLE Conversations (
+            ID INTEGER PRIMARY KEY,
+            Name VARCHAR(30) NOT NULL,
+            CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            LastEdited DATETIME DEFAULT CURRENT_TIMESTAMP 
+        );
+
+        CREATE TABLE ConversationMessages (
+            ID INTEGER PRIMARY KEY,
+            ConversationID INTEGER NOT NULL,
+            Role VARCHAR(9) NOT NULL CHECK (Role IN ('user', 'assinstant', 'system')),
+            Content TEXT NOT NULL,
+            Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (ConversationID) REFERENCES Conversations(ID) ON DELETE CASCADE
+        );
+    ";
+
+    public static readonly string SaveConversation = @"
+        INSERT OR REPLACE INTO Conversations (ID, Name)
+        VALUES (@ID, @Name);
+    ";
+
+    public static readonly string SaveConversationMessage = @"
+        INSERT OR REPLACE INTO ConversationMessages (ID, ConversationID, Role, Content, Timestamp)
+        VALUES (@ID, @ConversationID, @Role, @Content, @Timestamp);
+    ";
+
+    public static readonly string GetConversations = @"
+        SELECT ID, Name FROM Conversations
+        ORDER BY ID ASC;
+    ";
+
+    public static readonly string GetConversationHistory = @"
+        SELECT Content, Role, Timestamp FROM ConversationMessages
+        WHERE ConversationID = @ConversationID;
+    ";
+}
