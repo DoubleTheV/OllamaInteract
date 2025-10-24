@@ -3,17 +3,17 @@ namespace OllamaInteract.Core.DataAccess;
 public static class SqlQueries
 {
     public static readonly string InitializeDatabase = @"
-        CREATE TABLE Conversations (
+        CREATE TABLE IF NOT EXISTS Conversations (
             ID INTEGER PRIMARY KEY,
             Name VARCHAR(30) NOT NULL,
             CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
             LastEdited DATETIME DEFAULT CURRENT_TIMESTAMP 
         );
 
-        CREATE TABLE ConversationMessages (
+        CREATE TABLE IF NOT EXISTS ConversationMessages (
             ID INTEGER PRIMARY KEY,
             ConversationID INTEGER NOT NULL,
-            Role VARCHAR(9) NOT NULL CHECK (Role IN ('user', 'assinstant', 'system')),
+            Role VARCHAR(9) NOT NULL CHECK (Role IN ('user', 'assistant', 'system')),
             Content TEXT NOT NULL,
             Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (ConversationID) REFERENCES Conversations(ID) ON DELETE CASCADE
