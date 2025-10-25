@@ -18,15 +18,10 @@
 ## Development
 
 ```bash
-## In terminal 1: # It will run python server
-# Go into the cloned folder
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cd src/OllamaInteract.PythonServer
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 ## it will hotreload python changes
+# Fork repository and clone it onto your machine
 
-## In terminal 2: # It will build and run the client app
+git clone https://github.com/[yournick]/OllamaInteract
+
 # Go into the cloned folder
 cd OllamaInteract/src/OllamaInteract.CLI # for CLI
 
