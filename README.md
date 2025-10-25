@@ -1,5 +1,28 @@
 # Ollama Interact
 
+<div align="center" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+    <a href="https://github.com/DoubleTheV/OllamaInteract/blob/main/LICENSE">
+        <img src="https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg" alt="License: MPL 2.0">
+    </a>
+    <a href="https://github.com/DoubleTheV/OllamaInteract/stargazers">
+        <img src="https://img.shields.io/github/stars/DoubleTheV/OllamaInteract?style=social" alt="GitHub Stars">
+    </a>
+    <a href="https://github.com/DoubleTheV/OllamaInteract/network/members">
+        <img src="https://img.shields.io/github/forks/DoubleTheV/OllamaInteract?style=social" alt="GitHub Forks">
+    </a>
+    <a href="https://github.com/DoubleTheV/OllamaInteract/issues">
+        <img src="https://img.shields.io/github/issues/DoubleTheV/OllamaInteract" alt="GitHub Issues">
+    </a>
+    <a href="https://github.com/DoubleTheV/OllamaInteract/releases">
+        <img src="https://img.shields.io/github/v/release/DoubleTheV/OllamaInteract" alt="GitHub Release">
+    </a>
+    <a href="https://dotnet.microsoft.com/en-us/download/dotnet/9.0">
+        <img src="https://img.shields.io/badge/.NET-9.0-blueviolet" alt=".NET Version">
+    </a>
+</div>
+
+## Description
+
 Ollama Interact is a cross-platform CLI / Desktop app for interaction, management and memory of [Ollama](https://github.com/ollama/ollama) models.
 
 ## Features
@@ -13,8 +36,9 @@ Ollama Interact is a cross-platform CLI / Desktop app for interaction, managemen
 
 - [Python](https://www.python.org/downloads/)
 - [Pip](https://pypi.org/project/pip/)
-- [.NET](https://dotnet.microsoft.com/en-us/download)
 - [Ollama](https://github.com/ollama/ollama)
+- [.NET 9.0](https://dotnet.microsoft.com/en-us/download)
+- [Git](https://git-scm.com/install/) - if building manually
 
 ## Running the app
 
