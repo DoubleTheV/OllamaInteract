@@ -14,12 +14,14 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IOllamaApiClient _ollamaClient;
     private readonly IConfigManager _configService;
+    private readonly IDatabaseManager _dbManager;
     private readonly ServerManager _serverManager;
 
-    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, ServerManager serverManager)
+    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, IDatabaseManager dbManager,ServerManager serverManager)
     {
         _ollamaClient = ollamaClient;
         _configService = configManager;
+        _dbManager = dbManager;
         _serverManager = serverManager;
 
         _ = InitializeAsync();
@@ -58,6 +60,30 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private ObservableCollection<Conversation> _conversations = new ObservableCollection<Conversation>();
+    public ObservableCollection<Conversation> Conversations
+    {
+        get => _conversations;
+        set
+        {
+            _conversations = value;
+            OnPropertyChanged(nameof(Conversations));
+        }
+    }
+    private Conversation _selectedConversation = new Conversation(0);
+    public Conversation SelectedConversation
+    {
+        get => _selectedConversation;
+        set
+        {
+            _selectedConversation = value;
+            ChatHistory = new ObservableCollection<ChatMessage>(SelectedConversation.Messages);
+            OnPropertyChanged(nameof(ChatHistory));
+            OnPropertyChanged(nameof(SelectedConversation));
+        }
+    }
+
+
     private async Task InitializeAsync()
     {
         StatusMessage = "Initializing";
@@ -77,6 +103,17 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 SelectedModel = AvailableModels.First();
                 StatusMessage = "Loaded available models";
+            }
+
+            GetConversations();
+            if (Conversations.Count > 0)
+            {
+                SelectedConversation = Conversations.First();
+                StatusMessage = "Loaded conversations";
+            }
+            else
+            {
+                StatusMessage = "There were no saved conversations";    
             }
 
             await Task.Delay(1000);
@@ -131,6 +168,22 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private void GetConversations()
+    {
+        StatusMessage = "Getting conversations";
+
+        try
+        {
+            var convos = _dbManager.Conversations;
+
+            Conversations = new ObservableCollection<Conversation>(convos);
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error when getting conversations: {e.Message}";
+        }
+    }
+
     [RelayCommand]
     public async Task SendMessageAsync()
     {
@@ -158,6 +211,11 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 ChatHistory.Add(response.Result);
             }
+
+            _dbManager.UpdateConversation(SelectedConversation.ID, convo =>
+            {
+                convo.Messages = new List<ChatMessage>(ChatHistory);
+            });
         }
         catch (Exception e)
         {
