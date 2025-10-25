@@ -70,8 +70,8 @@ dotnet build
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/DoubleTheV/OllamaInteract?tab=contributing-ov-file) for details
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit pull requests, report issues, or suggest features.
 
 ## License
 
-[MPL-2.0](https://github.com/DoubleTheV/OllamaInteract?tab=MPL-2.0-1-ov-file)
+This project is licensed under the [Mozilla Public License 2.0 (MPL-2.0)](LICENSE).
