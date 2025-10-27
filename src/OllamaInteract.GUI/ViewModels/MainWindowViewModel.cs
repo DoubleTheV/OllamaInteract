@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OllamaInteract.Core.Models;
@@ -17,12 +18,16 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IDatabaseManager _dbManager;
     private readonly ServerManager _serverManager;
 
-    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, IDatabaseManager dbManager,ServerManager serverManager)
+    public ICommand SwitchConversationCommand { get; }
+
+    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, IDatabaseManager dbManager, ServerManager serverManager)
     {
         _ollamaClient = ollamaClient;
         _configService = configManager;
         _dbManager = dbManager;
         _serverManager = serverManager;
+
+        SwitchConversationCommand = new RelayCommand<object>(ChangeSelectedConversation);
 
         _ = InitializeAsync();
     }
@@ -83,7 +88,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-
     private async Task InitializeAsync()
     {
         StatusMessage = "Initializing";
@@ -113,7 +117,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
             else
             {
-                StatusMessage = "There were no saved conversations";    
+                StatusMessage = "There were no saved conversations";
             }
 
             await Task.Delay(1000);
@@ -236,6 +240,21 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception e)
         {
             StatusMessage = $"Error occured when creating a new conversation: {e.Message}";
+        }
+    }
+
+    private void ChangeSelectedConversation(object? param)
+    {
+        try
+        {
+            if(param != null && uint.TryParse(param.ToString(), out uint id))
+            {
+                SelectedConversation = Conversations[(int)id];
+            }
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error when switching conversation: {e.Message}";
         }
     }
 }

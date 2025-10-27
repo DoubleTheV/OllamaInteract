@@ -61,7 +61,9 @@
                     <ItemsControl ItemsSource="{Binding Conversations}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Margin="0,0,0,5" HorizontalAlignment="Stretch">
+                                <Button Margin="0,0,0,5" HorizontalAlignment="Stretch"
+                                        CommandParameter="{Binding ID}" 
+                                        Command="{Binding $parent[Grid].DataContext.SwitchConversationCommand}}">
                                     <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                 </Button>
                             </DataTemplate>
