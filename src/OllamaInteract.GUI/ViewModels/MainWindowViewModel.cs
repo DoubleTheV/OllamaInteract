@@ -222,4 +222,20 @@ public partial class MainWindowViewModel : ViewModelBase
             StatusMessage = $"Error occured when sending / recieving a message: {e.Message}";
         }
     }
+
+    [RelayCommand]
+    public void AddConversation()
+    {
+        try
+        {
+            var newID = (uint)Conversations.Count;
+            Conversations.Add(new Conversation(newID));
+            _selectedConversation = Conversations.Last();
+            _dbManager.UpdateConversation(newID, convo => new Conversation(newID));
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error occured when creating a new conversation: {e.Message}";
+        }
+    }
 }

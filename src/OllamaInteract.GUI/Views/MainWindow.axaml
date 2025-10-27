@@ -54,8 +54,9 @@
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="5">
                     <Button Margin="0,0,0,5" HorizontalAlignment="Stretch"
-                            Background="Transparent" BorderBrush="#6c757d" BorderThickness="1">
-                        <TextBlock Text="+ Create new conversation" TextTrimming="CharacterEllipsis" />
+                            Background="Transparent" BorderBrush="#6c757d" BorderThickness="1"
+                            Command="{Binding AddConversationCommand}">
+                        <TextBlock Text="+ Create new conversation" TextTrimming="CharacterEllipsis"/>
                     </Button>
                     <ItemsControl ItemsSource="{Binding Conversations}">
                         <ItemsControl.ItemTemplate>
