@@ -204,19 +204,29 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
+            var startConvoID = SelectedConversation.ID;
+
             var request = new ChatRequest();
             request.Content = userMessage;
             request.Model = SelectedModel.Name;
             request.Messages = ChatHistory.ToArray();
 
-            var response = _ollamaClient.SendChatAsync(request);
+            Conversations[(int)startConvoID].Messages.Add(request);
+            if(SelectedConversation.ID == startConvoID)
+            {
+                ChatHistory.Add(new ChatMessage(request));
+            }
 
-            ChatHistory.Add(new ChatMessage(request));
+            var response = _ollamaClient.SendChatAsync(request);            
 
             await response;
             if (response.IsCompletedSuccessfully)
             {
-                ChatHistory.Add(response.Result);
+                Conversations[(int)startConvoID].Messages.Add(response.Result);
+                if(SelectedConversation.ID == startConvoID)
+                {
+                    ChatHistory.Add(response.Result);
+                }
             }
 
             _dbManager.UpdateConversation(SelectedConversation.ID, convo =>
