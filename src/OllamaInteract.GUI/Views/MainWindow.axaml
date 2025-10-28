@@ -64,7 +64,11 @@
                                 <Button Margin="0,0,0,5" HorizontalAlignment="Stretch"
                                         CommandParameter="{Binding ID}" 
                                         Command="{Binding $parent[Grid].DataContext.SwitchConversationCommand}}">
-                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                        <Button Grid.Column="1" Margin="5,0,0,0" Content="X" Foreground="Red" 
+                                                Command="{Binding $parent[StackPanel].DataContext.DeleteConversationCommand}" CommandParameter="{Binding ID}" />
+                                    </Grid>
                                 </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

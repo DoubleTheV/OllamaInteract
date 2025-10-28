@@ -19,6 +19,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ServerManager _serverManager;
 
     public ICommand SwitchConversationCommand { get; }
+    public ICommand DeleteConversationCommand { get; }
 
     public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, IDatabaseManager dbManager, ServerManager serverManager)
     {
@@ -28,6 +29,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _serverManager = serverManager;
 
         SwitchConversationCommand = new RelayCommand<object>(ChangeSelectedConversation);
+        DeleteConversationCommand = new RelayCommand<object>(RemoveConversation);
 
         _ = InitializeAsync();
     }
@@ -54,7 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private AvailableModel _selectedModel = new AvailableModel() {Name="None"};
+    private AvailableModel _selectedModel = new AvailableModel() { Name = "None" };
     public AvailableModel SelectedModel
     {
         get => _selectedModel;
@@ -73,6 +75,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             _conversations = value;
             OnPropertyChanged(nameof(Conversations));
+            OnPropertyChanged(nameof(SelectedConversation));
         }
     }
     private Conversation _selectedConversation = new Conversation(0);
@@ -247,7 +250,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            if(param != null && uint.TryParse(param.ToString(), out uint id))
+            if (param != null && uint.TryParse(param.ToString(), out uint id))
             {
                 SelectedConversation = Conversations[(int)id];
             }
@@ -256,5 +259,21 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             StatusMessage = $"Error when switching conversation: {e.Message}";
         }
+    }
+    private void RemoveConversation(object? param)
+    {
+        try
+        {
+            if (param != null && uint.TryParse(param.ToString(), out uint id))
+            {
+                _dbManager.DeleteConversation(id);
+                Conversations.Clear();
+                Conversations = new ObservableCollection<Conversation>(_dbManager.Conversations);
+            }
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error when deleting conversation: {e.Message}";
+        }        
     }
 }
