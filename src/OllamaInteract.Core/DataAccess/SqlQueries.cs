@@ -39,4 +39,11 @@ public static class SqlQueries
         SELECT Content, Role, Timestamp FROM ConversationMessages
         WHERE ConversationID = @ConversationID;
     ";
+
+    public static readonly string[] DeleteConversationTransaction =
+    {
+        @"DELETE FROM Conversations WHERE ID = @ConversationID;",
+        @"UPDATE Conversations SET ID = ID - 1 WHERE ID > @ConversationID;",
+        @"UPDATE ConversationMessages SET ConversationID = ConversationID - 1 WHERE ConversationID > @ConversationID;"
+    };
 }

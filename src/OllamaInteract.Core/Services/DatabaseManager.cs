@@ -46,6 +46,7 @@ public class DatabaseManager : IDatabaseManager
             try
             {
                 InitializeDatabase();
+                var newConversations = new List<Conversation>();
                 using (var connection = new SqliteConnection(_connectionString))
                 {
                     connection.Open();
@@ -58,10 +59,10 @@ public class DatabaseManager : IDatabaseManager
                                 {
                                     Name = conversationReader.GetString(1)
                                 };
-                                _conversations.Add(conv);
+                                newConversations.Add(conv);
                             }
                     }
-                    foreach (var conversation in _conversations)
+                    foreach (var conversation in newConversations)
                     {
                         using (var historyCommand = new SqliteCommand(SqlQueries.GetConversationHistory, connection))
                         {
@@ -75,12 +76,14 @@ public class DatabaseManager : IDatabaseManager
                                         messageReader.GetString(2)
                                     );
                                     conversation.Messages.Add(message);
-                                    Console.WriteLine(message.Role);                                  
+                                    Console.WriteLine(message.Role);
                                 }
 
                         }
                     }
                 }
+                _conversations.Clear();
+                _conversations = newConversations;
             }
             catch (Exception e)
             {
@@ -101,7 +104,6 @@ public class DatabaseManager : IDatabaseManager
                     connection.Open();
                     foreach (var conversation in _conversations)
                     {
-                        Console.WriteLine($"Saving a conversation with ID: {conversation.ID}");
                         using (SqliteCommand saveCommand = new SqliteCommand(SqlQueries.SaveConversation, connection))
                         {
                             saveCommand.Parameters.AddWithValue("@ID", conversation.ID);
@@ -112,7 +114,6 @@ public class DatabaseManager : IDatabaseManager
 
                         foreach (var (message, index) in conversation.Messages.Select((message, index) => (message, index)))
                         {
-                            Console.WriteLine($"Saving message ({conversation.ID}, {index})");
                             using (SqliteCommand saveCommand = new SqliteCommand(SqlQueries.SaveConversationMessage, connection))
                             {
                                 saveCommand.Parameters.AddWithValue("@ID", index);
@@ -158,6 +159,51 @@ public class DatabaseManager : IDatabaseManager
             catch (Exception e)
             {
                 Console.WriteLine($"Error when updating a conversation: {e.Message}");
+            }
+        }
+    }
+
+    public void DeleteConversation(uint conversationID)
+    {
+        lock (_lock)
+        {
+            try
+            {
+                using (var connection = new SqliteConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            using var command = connection.CreateCommand();
+                            command.Transaction = transaction;
+                            command.Parameters.AddWithValue("@ConversationID", (int)conversationID);
+
+                            foreach (var step in SqlQueries.DeleteConversationTransaction)
+                            {
+                                command.CommandText = step;
+                                Console.WriteLine($"{command.CommandText}");
+                                Console.WriteLine($"{command.Parameters[0].ParameterName}:");
+                                Console.WriteLine($"{command.Parameters[0].Value}");
+
+                                command.ExecuteNonQuery();
+                            }
+                            transaction.Commit();
+                        }
+                        catch (Exception e)
+                        {
+                            transaction.Rollback();
+                            Console.WriteLine($"Core: Error within delete conversation transaction: {e.Message}");
+                        }
+                    }
+                }
+                LoadConversations();
+                Console.WriteLine($"After transaction: {Conversations.Count}; {conversationID}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Core: Error when deleting conversation: {e.Message}");
             }
         }
     }
