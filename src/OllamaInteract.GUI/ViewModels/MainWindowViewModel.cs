@@ -214,7 +214,7 @@ public partial class MainWindowViewModel : ViewModelBase
             Conversations[(int)startConvoID].Messages.Add(request);
             if(SelectedConversation.ID == startConvoID)
             {
-                ChatHistory.Add(new ChatMessage(request));
+                ChatHistory.Add(request);
             }
 
             var response = _ollamaClient.SendChatAsync(request);            
@@ -229,9 +229,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 }
             }
 
-            _dbManager.UpdateConversation(SelectedConversation.ID, convo =>
+            _dbManager.UpdateConversation(startConvoID, convo =>
             {
-                convo.Messages = new List<ChatMessage>(ChatHistory);
+                convo.Messages = new List<ChatMessage>(Conversations[(int)startConvoID].Messages);
             });
         }
         catch (Exception e)
