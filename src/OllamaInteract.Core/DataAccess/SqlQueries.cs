@@ -11,11 +11,12 @@ public static class SqlQueries
         );
 
         CREATE TABLE IF NOT EXISTS ConversationMessages (
-            ID INTEGER PRIMARY KEY,
-            ConversationID INTEGER NOT NULL,
+            ID INTEGER UNSIGNED NOT NULL,
+            ConversationID UNSIGNED INTEGER NOT NULL,
             Role VARCHAR(9) NOT NULL CHECK (Role IN ('user', 'assistant', 'system')),
             Content TEXT NOT NULL,
             Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (ID, ConversationID),
             FOREIGN KEY (ConversationID) REFERENCES Conversations(ID) ON DELETE CASCADE
         );
     ";
@@ -42,8 +43,10 @@ public static class SqlQueries
 
     public static readonly string[] DeleteConversationTransaction =
     {
+        @"PRAGMA foreign_keys = OFF;",
         @"DELETE FROM Conversations WHERE ID = @ConversationID;",
         @"UPDATE Conversations SET ID = ID - 1 WHERE ID > @ConversationID;",
-        @"UPDATE ConversationMessages SET ConversationID = ConversationID - 1 WHERE ConversationID > @ConversationID;"
+        @"UPDATE ConversationMessages SET ConversationID = ConversationID - 1 WHERE ConversationID > @ConversationID;",
+        @"PRAGMA foreign_keys = ON;"
     };
 }
