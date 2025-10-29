@@ -11,7 +11,14 @@ public class ChatMessage
     [JsonPropertyName("role")]
     public string Role { get; protected set; } = "system";
 
-    public ChatMessage(){}
+    public ChatMessage() { }
+    
+    public ChatMessage(string content, string role, string timestamp)
+    {
+        Content = content;
+        Role = role;
+        TimeStamp = timestamp;
+    }
 
     public ChatMessage(ChatRequest chatRequest)
     {

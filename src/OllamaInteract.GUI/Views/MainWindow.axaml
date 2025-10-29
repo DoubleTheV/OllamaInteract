@@ -51,13 +51,34 @@
 
     <Grid ColumnDefinitions="Auto, *" Margin="10">
         <Border Grid.Column="0" Margin="5" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" MinWidth="150" MaxWidth="200">
-            <StackPanel>
-                <TextBlock Text="Conversations: TO-DO" Margin="5"/>
-            </StackPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="5">
+                    <Button Margin="0,0,0,5" HorizontalAlignment="Stretch"
+                            Background="Transparent" BorderBrush="#6c757d" BorderThickness="1"
+                            Command="{Binding AddConversationCommand}">
+                        <TextBlock Text="+ Create new conversation" TextTrimming="CharacterEllipsis"/>
+                    </Button>
+                    <ItemsControl ItemsSource="{Binding Conversations}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Margin="0,0,0,5" HorizontalAlignment="Stretch"
+                                        CommandParameter="{Binding ID}" 
+                                        Command="{Binding $parent[Grid].DataContext.SwitchConversationCommand}}">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                        <Button Grid.Column="1" Margin="5,0,0,0" Content="X" Foreground="Red" 
+                                                Command="{Binding $parent[StackPanel].DataContext.DeleteConversationCommand}" CommandParameter="{Binding ID}" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
         </Border>
         <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto, Auto">
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10">
-                <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Conversation Name" />
+                <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SelectedConversation.Name}" />
                 <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center"
                         Grid.Column="1" Orientation="Horizontal">
                     <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"

@@ -10,6 +10,7 @@ public static class ServiceCollection
         services.AddHttpClient<IOllamaApiClient, OllamaApiClient>();
         services.AddSingleton<IConfigManager, ConfigManager>();
         services.AddSingleton<ServerManager>();
+        services.AddSingleton<IDatabaseManager, DatabaseManager>();
 
         return services;
     }

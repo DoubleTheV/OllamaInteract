@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OllamaInteract.Core.Models;
@@ -14,13 +15,21 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IOllamaApiClient _ollamaClient;
     private readonly IConfigManager _configService;
+    private readonly IDatabaseManager _dbManager;
     private readonly ServerManager _serverManager;
 
-    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, ServerManager serverManager)
+    public ICommand SwitchConversationCommand { get; }
+    public ICommand DeleteConversationCommand { get; }
+
+    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, IDatabaseManager dbManager, ServerManager serverManager)
     {
         _ollamaClient = ollamaClient;
         _configService = configManager;
+        _dbManager = dbManager;
         _serverManager = serverManager;
+
+        SwitchConversationCommand = new RelayCommand<object>(ChangeSelectedConversation);
+        DeleteConversationCommand = new RelayCommand<object>(RemoveConversation);
 
         _ = InitializeAsync();
     }
@@ -47,7 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private AvailableModel _selectedModel = new AvailableModel() {Name="None"};
+    private AvailableModel _selectedModel = new AvailableModel() { Name = "None" };
     public AvailableModel SelectedModel
     {
         get => _selectedModel;
@@ -55,6 +64,30 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             _selectedModel = value;
             OnPropertyChanged(nameof(SelectedModel));
+        }
+    }
+
+    private ObservableCollection<Conversation> _conversations = new ObservableCollection<Conversation>();
+    public ObservableCollection<Conversation> Conversations
+    {
+        get => _conversations;
+        set
+        {
+            _conversations = value;
+            OnPropertyChanged(nameof(Conversations));
+            OnPropertyChanged(nameof(SelectedConversation));
+        }
+    }
+    private Conversation _selectedConversation = new Conversation(0);
+    public Conversation SelectedConversation
+    {
+        get => _selectedConversation;
+        set
+        {
+            _selectedConversation = value;
+            ChatHistory = new ObservableCollection<ChatMessage>(SelectedConversation.Messages);
+            OnPropertyChanged(nameof(ChatHistory));
+            OnPropertyChanged(nameof(SelectedConversation));
         }
     }
 
@@ -77,6 +110,17 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 SelectedModel = AvailableModels.First();
                 StatusMessage = "Loaded available models";
+            }
+
+            GetConversations();
+            if (Conversations.Count > 0)
+            {
+                SelectedConversation = Conversations.First();
+                StatusMessage = "Loaded conversations";
+            }
+            else
+            {
+                StatusMessage = "There were no saved conversations";
             }
 
             await Task.Delay(1000);
@@ -131,6 +175,22 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private void GetConversations()
+    {
+        StatusMessage = "Getting conversations";
+
+        try
+        {
+            var convos = _dbManager.Conversations;
+
+            Conversations = new ObservableCollection<Conversation>(convos);
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error when getting conversations: {e.Message}";
+        }
+    }
+
     [RelayCommand]
     public async Task SendMessageAsync()
     {
@@ -144,24 +204,86 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
+            var startConvoID = SelectedConversation.ID;
+
             var request = new ChatRequest();
             request.Content = userMessage;
             request.Model = SelectedModel.Name;
             request.Messages = ChatHistory.ToArray();
 
-            var response = _ollamaClient.SendChatAsync(request);
+            Conversations[(int)startConvoID].Messages.Add(request);
+            if(SelectedConversation.ID == startConvoID)
+            {
+                ChatHistory.Add(request);
+            }
 
-            ChatHistory.Add(new ChatMessage(request));
+            var response = _ollamaClient.SendChatAsync(request);            
 
             await response;
             if (response.IsCompletedSuccessfully)
             {
-                ChatHistory.Add(response.Result);
+                Conversations[(int)startConvoID].Messages.Add(response.Result);
+                if(SelectedConversation.ID == startConvoID)
+                {
+                    ChatHistory.Add(response.Result);
+                }
             }
+
+            _dbManager.UpdateConversation(startConvoID, convo =>
+            {
+                convo.Messages = new List<ChatMessage>(Conversations[(int)startConvoID].Messages);
+            });
         }
         catch (Exception e)
         {
             StatusMessage = $"Error occured when sending / recieving a message: {e.Message}";
         }
+    }
+
+    [RelayCommand]
+    public void AddConversation()
+    {
+        try
+        {
+            var newID = (uint)Conversations.Count;
+            Conversations.Add(new Conversation(newID));
+            _selectedConversation = Conversations.Last();
+            _dbManager.UpdateConversation(newID, convo => new Conversation(newID));
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error occured when creating a new conversation: {e.Message}";
+        }
+    }
+
+    private void ChangeSelectedConversation(object? param)
+    {
+        try
+        {
+            if (param != null && uint.TryParse(param.ToString(), out uint id))
+            {
+                SelectedConversation = Conversations[(int)id];
+            }
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error when switching conversation: {e.Message}";
+        }
+    }
+    private void RemoveConversation(object? param)
+    {
+        try
+        {
+            if (param != null && uint.TryParse(param.ToString(), out uint id))
+            {
+                _dbManager.DeleteConversation(id);
+                Conversations.Clear();
+                Conversations = new ObservableCollection<Conversation>(_dbManager.Conversations);
+            }
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error when deleting conversation: {e.Message}";
+        }        
     }
 }

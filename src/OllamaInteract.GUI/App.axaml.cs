@@ -48,6 +48,8 @@ public partial class App : Application
             {
                 var serverManager = _services?.GetService<ServerManager>();
                 serverManager?.Dispose();
+                var dbManager = _services?.GetService<DatabaseManager>();
+                dbManager?.SaveConversations();
             };
         }
 
