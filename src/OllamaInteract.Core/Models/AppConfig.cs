@@ -14,7 +14,7 @@ public class AppConfig
     public string PythonExectuable { get; set; } = "python";
 
     [JsonPropertyName("python_venv_directory")]
-    public string[] PythonVenvDirectory { get; set; } = {"Python/.venv", "../../.venv"};
+    public string[] PythonVenvDirectory { get; set; } = {"Python/.venv/", "../../.venv"};
 
 
     [JsonPropertyName("python_requirements_path")] // relative to .exe // release primary and fallback to production

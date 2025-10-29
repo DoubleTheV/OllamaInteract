@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 
 namespace OllamaInteract.Core.Services;
@@ -163,7 +164,7 @@ public class ServerManager
         if (Environment.OSVersion.Platform == PlatformID.Win32NT)
         {
             return File.Exists(Path.Combine(venvDirectory, "Scripts", "python.exe")) &&
-                File.Exists(Path.Combine(venvDirectory, "bin", "pip"));
+                File.Exists(Path.Combine(venvDirectory, "Scripts", "pip.exe"));
         }
         else
         {
@@ -371,7 +372,7 @@ except ImportError as e:
     {
         if (Environment.OSVersion.Platform == PlatformID.Win32NT)
         {
-            return Path.Combine(venvDirectory, "Scripts", "pip");
+            return Path.Combine(venvDirectory, "Scripts", "pip.exe");
         }
         else
         {
@@ -381,11 +382,12 @@ except ImportError as e:
     
     private static string? GetFirstDirectory(string[] directories)
     {
-        foreach (var directory in directories)
+        foreach (var dir in directories)
         {
+            var directory = ChangeDividerForOS(dir);
             if (Directory.Exists(Path.Join(Directory.GetCurrentDirectory(), directory)))
             {
-                return directory;
+                return Path.Join(Directory.GetCurrentDirectory(), directory);
             }
         }
         return null;
@@ -393,11 +395,12 @@ except ImportError as e:
 
     private static string? GetFirstFilePath(string[] paths)
     {
-        foreach (var path in paths)
+        foreach (var p in paths)
         {
+            var path = ChangeDividerForOS(p);
             if (File.Exists(Path.Join(Directory.GetCurrentDirectory(), path)))
             {
-                return path;
+                return Path.Join(Directory.GetCurrentDirectory(), path);
             }
         }
         return null;
@@ -429,6 +432,11 @@ except ImportError as e:
         {
             return false;
         }
+    }
+
+    private static string ChangeDividerForOS(string dir)
+    {
+        return dir.Replace('/', Path.DirectorySeparatorChar);
     }
 
     public void Dispose()
