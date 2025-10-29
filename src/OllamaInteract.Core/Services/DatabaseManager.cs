@@ -76,7 +76,6 @@ public class DatabaseManager : IDatabaseManager
                                         messageReader.GetString(2)
                                     );
                                     conversation.Messages.Add(message);
-                                    Console.WriteLine(message.Role);
                                 }
 
                         }
@@ -92,7 +91,7 @@ public class DatabaseManager : IDatabaseManager
         }
     }
 
-    private void SaveConversations()
+    public void SaveConversations()
     {
         lock (_lock)
         {
@@ -144,12 +143,10 @@ public class DatabaseManager : IDatabaseManager
                 var existingConversation = _conversations.FirstOrDefault(c => c.ID == conversationID);
                 if (existingConversation != null)
                 {
-                    Console.WriteLine($"Updating existing conversation in database with ID {conversationID}");
                     updateAction(existingConversation);
                 }
                 else
                 {
-                    Console.WriteLine($"Creating new conversation in database with ID {conversationID}");
                     var newConversation = new Conversation(conversationID);
                     updateAction(newConversation);
                     _conversations.Add(newConversation);
@@ -183,9 +180,6 @@ public class DatabaseManager : IDatabaseManager
                             foreach (var step in SqlQueries.DeleteConversationTransaction)
                             {
                                 command.CommandText = step;
-                                Console.WriteLine($"{command.CommandText}");
-                                Console.WriteLine($"{command.Parameters[0].ParameterName}:");
-                                Console.WriteLine($"{command.Parameters[0].Value}");
 
                                 command.ExecuteNonQuery();
                             }
@@ -199,7 +193,6 @@ public class DatabaseManager : IDatabaseManager
                     }
                 }
                 LoadConversations();
-                Console.WriteLine($"After transaction: {Conversations.Count}; {conversationID}");
             }
             catch (Exception e)
             {
