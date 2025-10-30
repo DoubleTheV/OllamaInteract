@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OllamaInteract.Core.Models;
@@ -284,6 +285,19 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception e)
         {
             StatusMessage = $"Error when deleting conversation: {e.Message}";
-        }        
+        }
+    }
+
+    public bool InputHandler(KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            _ = SendMessageAsync();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
