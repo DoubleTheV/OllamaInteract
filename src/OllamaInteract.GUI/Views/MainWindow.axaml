@@ -79,7 +79,8 @@
         </Border>
         <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto, Auto">
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10">
-                <TextBox Name="ConversationNameField" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SelectedConversation.Name}" GotFocus="StartedNameChange" LostFocus="ConversationNameChanged" />
+                <TextBox Name="ConversationNameField" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SelectedConversation.Name}" 
+                         GotFocus="StartedNameChange" LostFocus="ConversationNameChanged" BorderThickness="0" />
                 <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center"
                         Grid.Column="1" Orientation="Horizontal">
                     <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"

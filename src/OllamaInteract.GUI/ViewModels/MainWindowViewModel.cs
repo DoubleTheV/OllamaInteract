@@ -280,6 +280,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 _dbManager.DeleteConversation(id);
                 Conversations.Clear();
                 Conversations = new ObservableCollection<Conversation>(_dbManager.Conversations);
+                if(SelectedConversation.ID == id)
+                {
+                    ChatHistory.Clear();
+                }
             }
         }
         catch (Exception e)
