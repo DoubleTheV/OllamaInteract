@@ -248,7 +248,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             var newID = (uint)Conversations.Count;
             Conversations.Add(new Conversation(newID));
-            _selectedConversation = Conversations.Last();
+            SelectedConversation = Conversations.Last();
             _dbManager.UpdateConversation(newID, convo => new Conversation(newID));
         }
         catch (Exception e)
@@ -297,6 +297,33 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         else
         {
+            return false;
+        }
+    }
+
+    public bool UpdateConversationName()
+    {
+        var ID = SelectedConversation.ID;
+        var name = SelectedConversation.Name;
+        try
+        {
+            var convo = Conversations.FirstOrDefault(c => c.ID == ID);
+            if (convo != null)
+            {
+                _dbManager.UpdateConversation(ID, convo =>
+                {
+                    convo.Name = name;
+                });
+            }
+            else
+            {
+                throw new Exception("No conversation with ID exists");
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error when updaing name for conversation: {e.Message}");
             return false;
         }
     }

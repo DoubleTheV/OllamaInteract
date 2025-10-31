@@ -1,12 +1,17 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using OllamaInteract.GUI.ViewModels;
+using Tmds.DBus.Protocol;
 
 namespace OllamaInteract.GUI.Views;
 
 public partial class MainWindow : Window
 {
+    private string _previousConversationName = string.Empty;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -37,6 +42,43 @@ public partial class MainWindow : Window
         else if (DataContext != null)
         {
             e.Handled = ((MainWindowViewModel)DataContext).InputHandler(e);
+            return;
+        }
+        e.Handled = false;
+    }
+
+    private void StartedNameChange(object sender, RoutedEventArgs e)
+    {
+        var textBox = (TextBox)sender;
+        if (textBox != null && textBox.Text != null)
+        {
+            _previousConversationName = textBox.Text;
+            e.Handled = true;
+            return;
+        }
+        e.Handled = false;
+    }
+
+    private void ConversationNameChanged(object sender, RoutedEventArgs e)
+    {
+        var textBox = (TextBox)sender;
+        if (textBox != null && textBox.Text != null)
+        {
+            if (_previousConversationName != textBox.Text && DataContext != null)
+            {
+                e.Handled = ((MainWindowViewModel)DataContext).UpdateConversationName();
+                return;
+            }
+        }
+        e.Handled = false;
+    }
+
+    private void BackgroundClicked(object sender, PointerPressedEventArgs e)
+    {
+        if (ConversationNameField.IsKeyboardFocusWithin)
+        {
+            UserPromptInputElement.Focus();
+            e.Handled = true;
             return;
         }
         e.Handled = false;
