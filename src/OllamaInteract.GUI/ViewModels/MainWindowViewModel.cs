@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OllamaInteract.Core.Models;
@@ -247,7 +248,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             var newID = (uint)Conversations.Count;
             Conversations.Add(new Conversation(newID));
-            _selectedConversation = Conversations.Last();
+            SelectedConversation = Conversations.Last();
             _dbManager.UpdateConversation(newID, convo => new Conversation(newID));
         }
         catch (Exception e)
@@ -279,11 +280,55 @@ public partial class MainWindowViewModel : ViewModelBase
                 _dbManager.DeleteConversation(id);
                 Conversations.Clear();
                 Conversations = new ObservableCollection<Conversation>(_dbManager.Conversations);
+                if(SelectedConversation.ID == id)
+                {
+                    ChatHistory.Clear();
+                }
             }
         }
         catch (Exception e)
         {
             StatusMessage = $"Error when deleting conversation: {e.Message}";
-        }        
+        }
+    }
+
+    public bool InputHandler(KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            _ = SendMessageAsync();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool UpdateConversationName()
+    {
+        var ID = SelectedConversation.ID;
+        var name = SelectedConversation.Name;
+        try
+        {
+            var convo = Conversations.FirstOrDefault(c => c.ID == ID);
+            if (convo != null)
+            {
+                _dbManager.UpdateConversation(ID, convo =>
+                {
+                    convo.Name = name;
+                });
+            }
+            else
+            {
+                throw new Exception("No conversation with ID exists");
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error when updaing name for conversation: {e.Message}");
+            return false;
+        }
     }
 }

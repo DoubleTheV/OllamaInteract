@@ -42,7 +42,7 @@ public class ServerManager
     {
         var config = _configManager.Config;
 
-        var venvExists = CheckVenvExists(GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First());
+        var venvExists = CheckVenvExists(GetFirstDirectory(config.PythonVenvDirectory));
         if (!venvExists)
         {
             Console.WriteLine("No python virtual environment");
@@ -76,7 +76,7 @@ public class ServerManager
                 return false;
             }
 
-            var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+            var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory);
 
             var startInfo = new ProcessStartInfo
             {
@@ -178,7 +178,7 @@ public class ServerManager
         var config = _configManager.Config;
         try
         {
-            string venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+            string venvDirectory = GetFirstDirectory(config.PythonVenvDirectory);
             Directory.CreateDirectory(venvDirectory);
 
             var startInfo = new ProcessStartInfo()
@@ -223,7 +223,7 @@ public class ServerManager
     private async Task<bool> CheckVenvDependenciesAsync()
     {
         var config = _configManager.Config;
-        var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+        var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory);
 
         if (!CheckVenvExists(venvDirectory))
         {
@@ -289,7 +289,7 @@ except ImportError as e:
     private async Task<bool> InstallVenvDependenciesAsync()
     {
         var config = _configManager.Config;
-        var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory) ?? config.PythonVenvDirectory.First();
+        var venvDirectory = GetFirstDirectory(config.PythonVenvDirectory);
 
         if (!CheckVenvExists(venvDirectory))
         {
@@ -380,17 +380,17 @@ except ImportError as e:
         }
     }
     
-    private static string? GetFirstDirectory(string[] directories)
+    private static string GetFirstDirectory(string[] directories)
     {
         foreach (var dir in directories)
         {
             var directory = ChangeDividerForOS(dir);
-            if (Directory.Exists(Path.Join(Directory.GetCurrentDirectory(), directory)))
+            if (Directory.Exists(Path.Join(AppDomain.CurrentDomain.BaseDirectory, directory)))
             {
-                return Path.Join(Directory.GetCurrentDirectory(), directory);
+                return Path.Join(AppDomain.CurrentDomain.BaseDirectory, directory);
             }
         }
-        return null;
+        return Path.Join(AppDomain.CurrentDomain.BaseDirectory, ChangeDividerForOS(directories[0]));
     }
 
     private static string? GetFirstFilePath(string[] paths)
@@ -398,12 +398,12 @@ except ImportError as e:
         foreach (var p in paths)
         {
             var path = ChangeDividerForOS(p);
-            if (File.Exists(Path.Join(Directory.GetCurrentDirectory(), path)))
+            if (File.Exists(Path.Join(AppDomain.CurrentDomain.BaseDirectory, path)))
             {
-                return Path.Join(Directory.GetCurrentDirectory(), path);
+                return Path.Join(AppDomain.CurrentDomain.BaseDirectory, path);
             }
         }
-        return null;
+        return Path.Join(AppDomain.CurrentDomain.BaseDirectory, ChangeDividerForOS(paths[0]));
     }
 
     private async Task<bool> WaitForServerAsync(TimeSpan timeout)

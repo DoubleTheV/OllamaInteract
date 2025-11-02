@@ -17,7 +17,9 @@ public static class SqlQueries
             Content TEXT NOT NULL,
             Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (ID, ConversationID),
-            FOREIGN KEY (ConversationID) REFERENCES Conversations(ID) ON DELETE CASCADE
+            FOREIGN KEY (ConversationID) REFERENCES Conversations(ID) 
+            ON DELETE CASCADE 
+            ON UPDATE CASCADE
         );
     ";
 
@@ -43,10 +45,7 @@ public static class SqlQueries
 
     public static readonly string[] DeleteConversationTransaction =
     {
-        @"PRAGMA foreign_keys = OFF;",
         @"DELETE FROM Conversations WHERE ID = @ConversationID;",
-        @"UPDATE Conversations SET ID = ID - 1 WHERE ID > @ConversationID;",
-        @"UPDATE ConversationMessages SET ConversationID = ConversationID - 1 WHERE ConversationID > @ConversationID;",
-        @"PRAGMA foreign_keys = ON;"
+        @"UPDATE Conversations SET ID = ID - 1 WHERE ID > @ConversationID;"
     };
 }

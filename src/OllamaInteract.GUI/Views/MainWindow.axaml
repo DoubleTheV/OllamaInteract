@@ -11,7 +11,8 @@
         x:Class="OllamaInteract.GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="OllamaInteract.GUI">
+        Title="OllamaInteract.GUI"
+        PointerPressed="BackgroundClicked">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -32,7 +33,7 @@
             <Setter Property="MaxWidth" Value="600" />
             <Setter Property="MinWidth" Value="400" />
         </Style>
-        <Style Selector="Border.ChatBubble TextBlock.Content">
+        <Style Selector="Border.ChatBubble SelectableTextBlock.Content">
             <Setter Property="FontSize" Value="20" />
         </Style>
         <Style Selector="Border.ChatBubble TextBlock.Timestamp">
@@ -78,7 +79,8 @@
         </Border>
         <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto, Auto">
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10">
-                <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SelectedConversation.Name}" />
+                <TextBox Name="ConversationNameField" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SelectedConversation.Name}" 
+                         GotFocus="StartedNameChange" LostFocus="ConversationNameChanged" BorderThickness="0" />
                 <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center"
                         Grid.Column="1" Orientation="Horizontal">
                     <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -101,7 +103,7 @@
                                 <DataTemplate>
                                     <Border Classes.ChatBubble = "True" Classes.UserMessage="{Binding Role, Converter={StaticResource RoleConverterUser}}" Classes.AIMessage="{Binding Role, Converter={StaticResource RoleConverterAI}}">
                                         <StackPanel>
-                                            <TextBlock Classes="Content" Text="{Binding Content}" TextWrapping="Wrap"/>
+                                            <SelectableTextBlock Classes="Content" Text="{Binding Content}" TextWrapping="Wrap"/>
                                             <TextBlock Classes="Timestamp" Text="{Binding TimeStamp}" TextWrapping="Wrap"/>
                                         </StackPanel>
                                     </Border>
@@ -114,8 +116,9 @@
             <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,10" />
             <Grid Grid.Row="3" Margin="10" MinHeight="100" MaxHeight="150"
                 ColumnDefinitions="*, Auto">
-                <TextBox Grid.Column="0" CornerRadius="8" BorderBrush="Transparent" Background="#212529" Margin="0,0,15,0"
-                    IsEnabled="{Binding IsConnected}" Text="{Binding UserInput}" TextWrapping="Wrap">
+                <TextBox Name="UserPromptInputElement" Grid.Column="0" CornerRadius="8" BorderBrush="Transparent" Background="#212529" Margin="0,0,15,0"
+                    IsEnabled="{Binding IsConnected}" Text="{Binding UserInput}" TextWrapping="Wrap" AcceptsTab="False"
+                    KeyDown="HandleInputFunctions">
                 </TextBox>
                 <Button Content="Send" Grid.Column="1" IsEnabled="{Binding IsConnected}" Command="{Binding SendMessageCommand}" />
             </Grid>
