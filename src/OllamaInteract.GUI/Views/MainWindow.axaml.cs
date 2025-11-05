@@ -1,10 +1,7 @@
-using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using OllamaInteract.GUI.ViewModels;
-using Tmds.DBus.Protocol;
 
 namespace OllamaInteract.GUI.Views;
 
@@ -80,6 +77,10 @@ public partial class MainWindow : Window
             UserPromptInputElement.Focus();
             e.Handled = true;
             return;
+        }
+        if(DataContext != null && ((MainWindowViewModel)DataContext).MenuVisible)
+        {
+            ((MainWindowViewModel)DataContext).MenuButtonPressed();
         }
         e.Handled = false;
     }

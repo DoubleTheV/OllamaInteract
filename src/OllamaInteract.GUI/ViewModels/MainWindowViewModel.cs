@@ -92,6 +92,15 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    // Model management
+
+    [ObservableProperty]
+    private bool _menuVisible = false;
+
+    [RelayCommand]
+    public void MenuButtonPressed() => MenuVisible ^= true;
+
+
     private async Task InitializeAsync()
     {
         StatusMessage = "Initializing";
