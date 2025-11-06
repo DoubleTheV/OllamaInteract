@@ -96,9 +96,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _menuVisible = false;
-
     [RelayCommand]
     public void MenuButtonPressed() => MenuVisible ^= true;
+
+    [ObservableProperty]
+    private bool _modelManagementVisible = false;
+    [RelayCommand]
+    public void ModelManagementButtonPressed() => ModelManagementVisible ^= true;
 
 
     private async Task InitializeAsync()

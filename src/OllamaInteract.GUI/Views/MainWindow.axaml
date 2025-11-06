@@ -58,11 +58,43 @@
 
     <Grid ColumnDefinitions="Auto, *" Margin="10">
 
+        <!-- Model Management-->
+        <Border Grid.ColumnSpan="2" ZIndex="2" HorizontalAlignment="Stretch" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1"
+                IsVisible="{Binding ModelManagementVisible}" Background="Black">
+            <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *">
+                <!-- Control-->
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                    <Button Content="X" Foreground="Red" Command="{Binding ModelManagementButtonPressedCommand}"/>
+                </StackPanel>
+                <!-- Model List-->
+                 <Border Grid.Row="1" Grid.Column="0" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" MinWidth="150" MaxWidth="200" Margin="5">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="5">
+                            <ItemsControl ItemsSource="{Binding AvailableModels}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,5" HorizontalAlignment="Stretch" CornerRadius="8" Background="#333333">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                                <Button Grid.Column="1" Margin="5,0,0,0">
+                                                    <lucide:Lucide Icon="Pencil" StrokeBrush="White" Width="16" />
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                 </Border>
+            </Grid>
+        </Border>
+
         <!-- Menu Popup-->
         <Border Name="MenuPopup" Grid.ColumnSpan="2" ZIndex="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" IsVisible="{Binding MenuVisible}"
                 Margin="5,0,0,52">
             <StackPanel Name="MenuControls" Classes="MenuControls">
-                <Button Content="Model Management"/>
+                <Button Content="Model Management" Command="{Binding ModelManagementButtonPressedCommand}"/>
                 <!-- Not Implemented yet-->
                 <Button Content="Settings" IsEnabled="False"/>
             </StackPanel>
