@@ -237,6 +237,8 @@ try:
     import fastapi
     import uvicorn
     import ollama
+    import httpx
+    from bs4 import BeautifulSoup
     print('success')
 except ImportError as e:
     print(f'Missing: {e}')
