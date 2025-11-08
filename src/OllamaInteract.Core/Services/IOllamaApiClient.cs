@@ -7,6 +7,7 @@ namespace OllamaInteract.Core.Services;
 public interface IOllamaApiClient
 {
     Task<List<AvailableModel>> GetAvailableModelsAsync();
+    Task<List<AvailableModel>> SearchModelsAsync(string query);
     Task<ChatResponse> SendChatAsync(ChatRequest request);
     Task<bool> IsServerHealthyAsync();
 }

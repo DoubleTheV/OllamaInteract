@@ -70,6 +70,20 @@ public class OllamaApiClient : IOllamaApiClient
         }
     }
 
+    public async Task<List<AvailableModel>> SearchModelsAsync(string query)
+    {
+        var response = await _httpClient.GetAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/search?prompt={Uri.EscapeDataString(query)}");
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadFromJsonAsync<AvailableModelsResponse>();
+            if(json != null)
+            {
+                return json.Models;
+            }
+        }
+        return new List<AvailableModel>();
+    }
+
     
     public async Task<bool> IsServerHealthyAsync()
     {

@@ -47,25 +47,15 @@ try
     Console.WriteLine($"    Update check: {configManager.Config.OllamaPort != 696969}");
     configManager.SaveConfig();
 
-
-    var convo = new Conversation(0);
-    convo.Name = "test";
-    convo.Messages.Add(request);
-    convo.Messages.Add(answer);
-    Console.WriteLine("Database check");
-    foreach(var item in dbManager.Conversations)
+    var searchedModels = await ollamaClient.SearchModelsAsync("minimax-m2");
+    foreach(var m in searchedModels)
     {
-        Console.WriteLine($"ID: {item.ID}, Name: {item.Name}, Messages: ");
-        foreach(var message in item.Messages)
+        Console.WriteLine(m.Name);
+        foreach(var ParameterS in m.ParameterS)
         {
-            Console.Write($"(content: {message.Content}, role: {message.Role})");
+            Console.WriteLine($"    {ParameterS}");
         }
     }
-    dbManager.UpdateConversation(0, conv =>
-    {
-        conv.Name = convo.Name;
-        conv.Messages = convo.Messages;
-    });
 
 
     serverManager.Dispose();
