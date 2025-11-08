@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Request
 from app.services.ollama_client import OllamaClient
+from app.services.ollama_scraper import OllamaScraper
 
 router = APIRouter()
 ollama_client = OllamaClient()
+ollama_scraper = OllamaScraper()
 
 @router.post("/chat")
 async def chat_endpoint(request: Request):
@@ -22,13 +24,13 @@ async def chat_endpoint(request: Request):
         )
 
 @router.get("/models")
-async def models_endpoint():
+async def models_endpoint(): ## to-do: change the structure to not repeat names, matching the Model class in C#
     try:
         awaitedModels = await ollama_client.list_models()
         formattedModels = [ # format them to match Model class in C#               
             {
                 "name": m['model'],
-                "parameters": m['details']['parameter_size']
+                "parameters": {m['details']['parameter_size']}
             }
             for m in awaitedModels
         ]
@@ -58,3 +60,19 @@ async def generate_endopoint(prompt: str, model: str):
             status_code=500,
             detail=f"Generation failed: {str(e)}"
         )
+
+@router.get("/search")
+async def search_models(prompt: str):
+    models, status_code = await ollama_scraper.scrapeModels(prompt)
+
+    if(status_code != 200):
+        raise HTTPException(
+            status_code= status_code,
+            detail="Searching models failed."
+        )
+    
+    return {
+        "success": True,
+        "models": models,
+        "error": None
+    }
