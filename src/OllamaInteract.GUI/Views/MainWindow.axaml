@@ -67,7 +67,7 @@
                     <Button Content="X" Foreground="Red" Command="{Binding ModelManagementButtonPressedCommand}"/>
                 </StackPanel>
                 <!-- Model List-->
-                 <Border Grid.Row="1" Grid.Column="0" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" MinWidth="150" MaxWidth="200" Margin="5">
+                <Border Grid.Row="1" Grid.Column="0" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" MinWidth="150" MaxWidth="200" Margin="5">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="5">
                             <ItemsControl ItemsSource="{Binding AvailableModels}">
@@ -86,7 +86,13 @@
                             </ItemsControl>
                         </StackPanel>
                     </ScrollViewer>
-                 </Border>
+                </Border>
+                <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,5,5,5">
+                    <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
+                        <TextBlock Text="Search for models:" HorizontalAlignment="Center" FontSize="20" />
+                        <TextBox HorizontalAlignment="Center" MinWidth="400" FontSize="18" />
+                    </StackPanel>
+                </DockPanel>
             </Grid>
         </Border>
 
@@ -149,6 +155,14 @@
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" FontSize="16"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox HorizontalAlignment="Right" VerticalAlignment="Center" MinWidth="100" MaxWidth="250" 
+                            ItemsSource="{Binding SelectedModel.ParameterS}" SelectedItem="{Binding SelectedParameter}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="16"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>

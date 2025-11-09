@@ -65,8 +65,12 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             _selectedModel = value;
             OnPropertyChanged(nameof(SelectedModel));
+            SelectedParameter = SelectedModel.ParameterS.First();
+            OnPropertyChanged(nameof(SelectedParameter));
         }
     }
+    [ObservableProperty]
+    public string _selectedParameter = string.Empty;
 
     private ObservableCollection<Conversation> _conversations = new ObservableCollection<Conversation>();
     public ObservableCollection<Conversation> Conversations
@@ -222,7 +226,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var request = new ChatRequest();
             request.Content = userMessage;
-            request.Model = SelectedModel.Name;
+            request.Model = $"{SelectedModel.Name}:{SelectedParameter}";
             request.Messages = ChatHistory.ToArray();
 
             Conversations[(int)startConvoID].Messages.Add(request);
