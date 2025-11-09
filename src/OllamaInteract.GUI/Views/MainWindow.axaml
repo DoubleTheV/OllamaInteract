@@ -142,6 +142,7 @@
                 </Border>
             </DockPanel>
         </Border>
+        <!-- Top Bar-->
         <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto, Auto">
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10">
                 <TextBox Name="ConversationNameField" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SelectedConversation.Name}" 
@@ -150,6 +151,7 @@
                         Grid.Column="1" Orientation="Horizontal">
                     <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
                             Text="Model: " FontSize="16" />
+                    <!-- Model choice-->
                     <ComboBox HorizontalAlignment="Right" VerticalAlignment="Center" MinWidth="100" MaxWidth="250" 
                             ItemsSource="{Binding AvailableModels}" SelectedItem="{Binding SelectedModel}">
                         <ComboBox.ItemTemplate>
@@ -158,6 +160,7 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
+                    <!-- Parameter choice-->
                     <ComboBox HorizontalAlignment="Right" VerticalAlignment="Center" MinWidth="100" MaxWidth="250" 
                             ItemsSource="{Binding SelectedModel.ParameterS}" SelectedItem="{Binding SelectedParameter}">
                         <ComboBox.ItemTemplate>
