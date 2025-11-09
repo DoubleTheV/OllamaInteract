@@ -27,13 +27,23 @@ async def chat_endpoint(request: Request):
 async def models_endpoint(): ## to-do: change the structure to not repeat names, matching the Model class in C#
     try:
         awaitedModels = await ollama_client.list_models()
-        formattedModels = [ # format them to match Model class in C#               
-            {
-                "name": m['model'],
-                "parameters": {m['details']['parameter_size']}
-            }
-            for m in awaitedModels
-        ]
+        temp_dict = {}
+        for m in awaitedModels:
+            name, parameter = m['model'].split(':')
+
+            if name in temp_dict:
+                temp_dict[name].append(parameter)
+            else:
+                temp_dict[name] = [parameter]
+
+        formattedModels = []
+
+        for name, parameters in temp_dict.items():
+            formattedModels.append({
+                "name": name,
+                "parameters": parameters
+            })
+
         return {
             "success": True,
             "models": formattedModels,
