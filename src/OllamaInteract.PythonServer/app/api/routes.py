@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request
 from app.services.ollama_client import OllamaClient
 from app.services.ollama_scraper import OllamaScraper
+from typing import Optional
 
 router = APIRouter()
 ollama_client = OllamaClient()
@@ -72,7 +73,7 @@ async def generate_endopoint(prompt: str, model: str):
         )
 
 @router.get("/search")
-async def search_models(prompt: str):
+async def search_models(prompt: Optional[str] = None):
     models, status_code = await ollama_scraper.scrapeModels(prompt)
 
     if(status_code != 200):

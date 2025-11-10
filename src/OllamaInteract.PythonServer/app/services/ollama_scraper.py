@@ -1,5 +1,6 @@
 import httpx
 from bs4 import BeautifulSoup
+from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -8,10 +9,15 @@ class OllamaScraper:
     def __init__(self):
         self.client = httpx.AsyncClient()
 
-    async def scrapeModels(self, query):
-        response = await self.client.get(f"https://ollama.com/search?q={query}")
+    async def scrapeModels(self, query: Optional[str] = None):
+        response = ""
+        if query is None or query == "":
+            response = await self.client.get(f"https://ollama.com/search")
+        else:
+            response = await self.client.get(f"https://ollama.com/search?q={query}")
+
         if(response.status_code != 200):
-            logger.error()
+            logger.error(f"Failed to get website data: {response.status_code}")
             return None, response.status_code
 
         soup = BeautifulSoup(response.text, 'html.parser')
