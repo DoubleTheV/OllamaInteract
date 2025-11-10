@@ -56,6 +56,19 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         }
     }
+    private ObservableCollection<AvailableModel> _searchedModels = new ObservableCollection<AvailableModel>();
+    public ObservableCollection<AvailableModel> SearchedModels
+    {
+        get => _searchedModels;
+        set
+        {
+            if (_searchedModels != value)
+            {
+                _searchedModels = value;
+                OnPropertyChanged(nameof(SearchedModels));
+            }
+        }
+    }
 
     private AvailableModel _selectedModel = new AvailableModel() { Name = "None" };
     public AvailableModel SelectedModel
@@ -93,6 +106,21 @@ public partial class MainWindowViewModel : ViewModelBase
             ChatHistory = new ObservableCollection<ChatMessage>(SelectedConversation.Messages);
             OnPropertyChanged(nameof(ChatHistory));
             OnPropertyChanged(nameof(SelectedConversation));
+        }
+    }
+
+    private string _searchQuery = string.Empty;
+    public string SearchQuery
+    {
+        get => _searchQuery;
+        set
+        {
+            if(_searchQuery != value)
+            {
+                _searchQuery = value;
+                OnPropertyChanged(nameof(SearchQuery));
+                _ = SearchForModels();
+            }
         }
     }
 
@@ -140,6 +168,8 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 StatusMessage = "There were no saved conversations";
             }
+
+            await SearchForModels();
 
             await Task.Delay(1000);
 
@@ -230,18 +260,18 @@ public partial class MainWindowViewModel : ViewModelBase
             request.Messages = ChatHistory.ToArray();
 
             Conversations[(int)startConvoID].Messages.Add(request);
-            if(SelectedConversation.ID == startConvoID)
+            if (SelectedConversation.ID == startConvoID)
             {
                 ChatHistory.Add(request);
             }
 
-            var response = _ollamaClient.SendChatAsync(request);            
+            var response = _ollamaClient.SendChatAsync(request);
 
             await response;
             if (response.IsCompletedSuccessfully)
             {
                 Conversations[(int)startConvoID].Messages.Add(response.Result);
-                if(SelectedConversation.ID == startConvoID)
+                if (SelectedConversation.ID == startConvoID)
                 {
                     ChatHistory.Add(response.Result);
                 }
@@ -255,6 +285,20 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception e)
         {
             StatusMessage = $"Error occured when sending / recieving a message: {e.Message}";
+        }
+    }
+    
+    public async Task SearchForModels()
+    {
+        try
+        {
+            var query = SearchQuery;
+
+            SearchedModels = new ObservableCollection<AvailableModel>(await _ollamaClient.SearchModelsAsync(query));
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Error occured when searching for models: {e.Message}";
         }
     }
 

@@ -90,8 +90,40 @@
                 <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,5,5,5">
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
                         <TextBlock Text="Search for models:" HorizontalAlignment="Center" FontSize="20" />
-                        <TextBox HorizontalAlignment="Center" MinWidth="400" FontSize="18" />
+                        <TextBox HorizontalAlignment="Center" MinWidth="400" FontSize="18" Text="{Binding SearchQuery}" />
                     </StackPanel>
+                    <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
+                        <ItemsControl ItemsSource="{Binding SearchedModels}" HorizontalAlignment="Stretch">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    </WrapPanel>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="White" BorderThickness="1" CornerRadius="8" MaxWidth="300" Margin="5">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" Margin="5" FontSize="20" TextWrapping="Wrap" />
+                                            <ItemsControl ItemsSource="{Binding ParameterS}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="2.5">
+                                                        </WrapPanel>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="{Binding}" Margin="5"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </DockPanel>
             </Grid>
         </Border>
