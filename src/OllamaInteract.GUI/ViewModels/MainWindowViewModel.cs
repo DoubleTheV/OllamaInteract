@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Input;
@@ -14,35 +15,27 @@ namespace OllamaInteract.GUI.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    // Services
+
     private readonly IOllamaApiClient _ollamaClient;
     private readonly IConfigManager _configService;
     private readonly IDatabaseManager _dbManager;
     private readonly ServerManager _serverManager;
 
-    public ICommand SwitchConversationCommand { get; }
-    public ICommand DeleteConversationCommand { get; }
-
-    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, IDatabaseManager dbManager, ServerManager serverManager)
-    {
-        _ollamaClient = ollamaClient;
-        _configService = configManager;
-        _dbManager = dbManager;
-        _serverManager = serverManager;
-
-        SwitchConversationCommand = new RelayCommand<object>(ChangeSelectedConversation);
-        DeleteConversationCommand = new RelayCommand<object>(RemoveConversation);
-
-        _ = InitializeAsync();
-    }
+    // Debugging and accessibility
 
     [ObservableProperty]
     private bool _isConnected = false;
     [ObservableProperty]
     private string _statusMessage = string.Empty;
+    
+    // Chatting
+    
     [ObservableProperty]
     private string _userInput = string.Empty;
 
     public ObservableCollection<ChatMessage> ChatHistory { get; set; } = new ObservableCollection<ChatMessage>();
+    
     private ObservableCollection<AvailableModel> _availableModels = new ObservableCollection<AvailableModel>();
     public ObservableCollection<AvailableModel> AvailableModels
     {
@@ -69,6 +62,8 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         }
     }
+
+    // Selected Objects
 
     private AvailableModel _selectedModel = new AvailableModel() { Name = "None" };
     public AvailableModel SelectedModel
@@ -109,6 +104,8 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    // Model management
+
     private string _searchQuery = string.Empty;
     public string SearchQuery
     {
@@ -124,8 +121,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    // Model management
-
     [ObservableProperty]
     private bool _menuVisible = false;
     [RelayCommand]
@@ -136,6 +131,28 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     public void ModelManagementButtonPressed() => ModelManagementVisible ^= true;
 
+    // Cancellation Tokens
+
+    private CancellationTokenSource _searchCancellationTokenSource = new CancellationTokenSource();
+
+    // Parameter RelayCommands
+
+    public ICommand SwitchConversationCommand { get; }
+    public ICommand DeleteConversationCommand { get; }
+
+
+    public MainWindowViewModel(IOllamaApiClient ollamaClient, IConfigManager configManager, IDatabaseManager dbManager, ServerManager serverManager)
+    {
+        _ollamaClient = ollamaClient;
+        _configService = configManager;
+        _dbManager = dbManager;
+        _serverManager = serverManager;
+
+        SwitchConversationCommand = new RelayCommand<object>(ChangeSelectedConversation);
+        DeleteConversationCommand = new RelayCommand<object>(RemoveConversation);
+
+        _ = InitializeAsync();
+    }
 
     private async Task InitializeAsync()
     {
