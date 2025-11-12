@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using OllamaInteract.Core.Models;
 
@@ -70,8 +71,9 @@ public class OllamaApiClient : IOllamaApiClient
         }
     }
 
-    public async Task<List<AvailableModel>> SearchModelsAsync(string query)
+    public async Task<List<AvailableModel>> SearchModelsAsync(string query, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var response = await _httpClient.GetAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/search?prompt={Uri.EscapeDataString(query)}");
         if (response.IsSuccessStatusCode)
         {

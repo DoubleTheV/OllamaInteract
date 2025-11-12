@@ -49,6 +49,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         }
     }
+
     private ObservableCollection<AvailableModel> _searchedModels = new ObservableCollection<AvailableModel>();
     public ObservableCollection<AvailableModel> SearchedModels
     {
@@ -91,6 +92,7 @@ public partial class MainWindowViewModel : ViewModelBase
             OnPropertyChanged(nameof(SelectedConversation));
         }
     }
+
     private Conversation _selectedConversation = new Conversation(0);
     public Conversation SelectedConversation
     {
@@ -311,7 +313,12 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             var query = SearchQuery;
 
-            SearchedModels = new ObservableCollection<AvailableModel>(await _ollamaClient.SearchModelsAsync(query));
+            _searchCancellationTokenSource.Cancel();
+            _searchCancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _searchCancellationTokenSource.Token;
+
+            await Task.Delay(300);
+            SearchedModels = new ObservableCollection<AvailableModel>(await _ollamaClient.SearchModelsAsync(query, cancellationToken));
         }
         catch (Exception e)
         {
