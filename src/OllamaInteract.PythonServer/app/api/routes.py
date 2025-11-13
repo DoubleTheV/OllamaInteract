@@ -87,3 +87,11 @@ async def search_models(prompt: Optional[str] = None):
         "models": models,
         "error": None
     }
+
+@router.post("/pull")
+async def pull_model(request: Request):
+    try:
+        body = await request.json()
+        await ollama_client.pull_model(body)
+    except Exception as e:
+        print(e)

@@ -32,3 +32,7 @@ class OllamaClient:
     async def list_models(self) -> List[Dict[str, Any]]:
         response = self.client.list()
         return response['models']
+
+    async def pull_model(self, model: str) -> bool:
+        self.client.pull(model).completed
+        return True
