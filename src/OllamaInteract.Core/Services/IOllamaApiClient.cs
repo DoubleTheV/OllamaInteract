@@ -9,5 +9,6 @@ public interface IOllamaApiClient
     Task<List<AvailableModel>> GetAvailableModelsAsync();
     Task<List<AvailableModel>> SearchModelsAsync(string query, CancellationToken cancellationToken);
     Task<ChatResponse> SendChatAsync(ChatRequest request);
+    Task<bool> PullOllamaModelAsync(string model);
     Task<bool> IsServerHealthyAsync();
 }

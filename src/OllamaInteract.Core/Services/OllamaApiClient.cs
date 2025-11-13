@@ -86,7 +86,7 @@ public class OllamaApiClient : IOllamaApiClient
         return new List<AvailableModel>();
     }
 
-    
+
     public async Task<bool> IsServerHealthyAsync()
     {
         var response = await _httpClient.GetAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/health");
@@ -94,11 +94,18 @@ public class OllamaApiClient : IOllamaApiClient
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadFromJsonAsync<ServerHealthyCheck>();
-            if(json != null && json.Status == "healthy")
+            if (json != null && json.Status == "healthy")
             {
                 return true;
             }
         }
         return false;
+    }
+    
+    public async Task<bool> PullOllamaModelAsync(string model)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/pull", model);
+
+        return response.IsSuccessStatusCode;
     }
 }

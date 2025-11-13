@@ -47,15 +47,18 @@ try
     Console.WriteLine($"    Update check: {configManager.Config.OllamaPort != 696969}");
     configManager.SaveConfig();
 
-    var searchedModels = await ollamaClient.SearchModelsAsync("minimax-m2");
-    foreach(var m in searchedModels)
+    var searchedModels = await ollamaClient.SearchModelsAsync("minimax-m2", new CancellationToken());
+    foreach (var m in searchedModels)
     {
         Console.WriteLine(m.Name);
-        foreach(var ParameterS in m.ParameterS)
+        foreach (var ParameterS in m.ParameterS)
         {
             Console.WriteLine($"    {ParameterS}");
         }
     }
+
+    var pulled = await ollamaClient.PullOllamaModelAsync("qwen3:0.6b");
+    Console.WriteLine($"Pulling qwen3:0.6b result: {pulled}");
 
 
     serverManager.Dispose();
