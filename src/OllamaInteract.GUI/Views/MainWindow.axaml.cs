@@ -1,6 +1,8 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using OllamaInteract.Core.Models;
 using OllamaInteract.GUI.ViewModels;
 
 namespace OllamaInteract.GUI.Views;
@@ -78,10 +80,35 @@ public partial class MainWindow : Window
             e.Handled = true;
             return;
         }
-        if(DataContext != null && ((MainWindowViewModel)DataContext).MenuVisible)
+        if (DataContext != null && ((MainWindowViewModel)DataContext).MenuVisible)
         {
             ((MainWindowViewModel)DataContext).MenuButtonPressed();
         }
         e.Handled = false;
+    }
+
+    private void PullModel(object sender, RoutedEventArgs e)
+    {
+        var button = (Button)sender;
+        try
+        {
+            if (button.Parent is Control &&
+                button.Parent.Parent is Control &&
+                button.Parent.Parent.DataContext is AvailableModel)
+            {
+                var model = (AvailableModel)button.Parent.Parent.DataContext;
+                var parameter = button.Content;
+
+                var modelName = $"{model}:{parameter}";
+                if (DataContext != null)
+                {
+                    _ = ((MainWindowViewModel)DataContext).PullModel(modelName);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"GUI Error: {ex.Message}");
+        }
     }
 }

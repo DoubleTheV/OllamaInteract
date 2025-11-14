@@ -114,7 +114,7 @@
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Button Content="{Binding}" Margin="5"/>
+                                                        <Button Content="{Binding}" Margin="5" Click="PullModel" />
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>

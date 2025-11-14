@@ -416,4 +416,26 @@ public partial class MainWindowViewModel : ViewModelBase
             return false;
         }
     }
+
+    public async Task PullModel(string model)
+    {
+        try
+        {
+            var result = await _ollamaClient.PullOllamaModelAsync(model);
+
+            switch (result)
+            {
+                case true:
+                    StatusMessage = $"Pulled model: {result}";
+                    break;
+                case false:
+                    StatusMessage = $"Pulling model failed: {result}";
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error when pulling model: {e.Message}");
+        }
+    }
 }
