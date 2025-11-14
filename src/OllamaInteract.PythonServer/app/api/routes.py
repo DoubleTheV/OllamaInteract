@@ -74,19 +74,27 @@ async def generate_endopoint(prompt: str, model: str):
 
 @router.get("/search")
 async def search_models(prompt: Optional[str] = None):
-    models, status_code = await ollama_scraper.scrapeModels(prompt)
+    try:
+        models, status_code = await ollama_scraper.scrapeModels(prompt)
 
-    if(status_code != 200):
-        raise HTTPException(
-            status_code= status_code,
-            detail="Searching models failed."
-        )
-    
-    return {
-        "success": True,
-        "models": models,
-        "error": None
-    }
+        if(status_code != 200):
+            raise HTTPException(
+                status_code= status_code,
+                detail="Searching models failed."
+            )
+
+        return {
+            "success": True,
+            "models": models,
+            "error": None
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "success": False,
+            "models": None,
+            "error": e
+        }
 
 @router.post("/pull")
 async def pull_model(request: Request):
