@@ -114,7 +114,7 @@ public partial class MainWindowViewModel : ViewModelBase
         get => _searchQuery;
         set
         {
-            if(_searchQuery != value)
+            if (_searchQuery != value)
             {
                 _searchQuery = value;
                 OnPropertyChanged(nameof(SearchQuery));
@@ -122,6 +122,19 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         }
     }
+
+    public enum ModelWindowMode : byte
+    {
+        Search = 0,
+        Edit = 1
+    }
+
+    [ObservableProperty]
+    public ModelWindowMode currentModelWindowMode = ModelWindowMode.Search;
+    [RelayCommand]
+    public void SetModelWindowModeSearch() => CurrentModelWindowMode = ModelWindowMode.Search;
+    public void SetModelWindowModeEdit() => CurrentModelWindowMode = ModelWindowMode.Edit;
+
 
     [ObservableProperty]
     private bool _menuVisible = false;

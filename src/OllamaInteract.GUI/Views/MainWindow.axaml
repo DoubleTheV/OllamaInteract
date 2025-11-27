@@ -23,6 +23,7 @@
     <Window.Resources>
         <conv:RoleConverterUser x:Key="RoleConverterUser" />
         <conv:RoleConverterAI x:Key="RoleConverterAI" />
+        <conv:ModelWindowModeConverter x:Key="ModelWindowMode" />
     </Window.Resources>
 
     <Window.Styles>
@@ -77,7 +78,7 @@
                                         <Border Margin="0,0,0,5" HorizontalAlignment="Stretch" CornerRadius="8" Background="#333333">
                                             <Grid ColumnDefinitions="*,Auto">
                                                 <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                                <Button Grid.Column="1" Margin="5,0,0,0">
+                                                <Button Grid.Column="1" Margin="5,0,0,0" Tag="{Binding Name}" Click="EditModel">
                                                     <lucide:Lucide Icon="Pencil" StrokeBrush="White" Width="16" />
                                                 </Button>
                                             </Grid>
@@ -89,7 +90,8 @@
                     </ScrollViewer>
                 </Border>
                 <!-- Model Search-->
-                <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,5,5,5" IsVisible="False">
+                <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,5,5,5"
+                            IsVisible="{Binding CurrentModelWindowMode, Converter={StaticResource, ModelWindowMode}, ConverterParameter=Search}">
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
                         <TextBlock Text="Search for models:" HorizontalAlignment="Center" FontSize="20" />
                         <TextBox HorizontalAlignment="Center" MinWidth="400" FontSize="18" Text="{Binding SearchQuery}" />
@@ -128,9 +130,10 @@
                     </ScrollViewer>
                 </DockPanel>
                 <!-- Model Edit-->
-                <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,5,5,5" IsVisible="True" VerticalAlignment="Stretch" LastChildFill="False">
+                <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,5,5,5" VerticalAlignment="Stretch" LastChildFill="False"
+                            IsVisible="{Binding CurrentModelWindowMode, Converter={StaticResource, ModelWindowMode}, ConverterParameter=Edit}">
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch">
-                        <TextBlock HorizontalAlignment="Center" FontSize="18" Margin="0 0 0 5">Parent model</TextBlock>
+                        <TextBlock Name="EditModelParentName" HorizontalAlignment="Center" FontSize="18" Margin="0 0 0 5">Parent model</TextBlock>
                         <TextBox HorizontalAlignment="Center" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" FontSize="16" Text="Llama 2" Margin="5" IsEnabled="False" Background="Transparent"/>
                         <TextBlock HorizontalAlignment="Center" FontSize="18" Margin="10 0 0 5">Model name</TextBlock>
                         <TextBox HorizontalAlignment="Center" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" FontSize="16" Text="GLaDOS" Margin="5" Background="Transparent"/>
@@ -139,7 +142,10 @@
                         <TextBlock HorizontalAlignment="Center" FontSize="18" Margin="0 0 0 5">SYSTEM prompt</TextBlock>
                         <TextBox HorizontalAlignment="Stretch" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" FontSize="16" Margin="5" Background="Transparent" MinHeight="150"
                                  KeyDown="HandleInputFunctions" AcceptsTab="False" TextWrapping="Wrap"/>
-                        <Button HorizontalAlignment="Center" FontSize="18" Margin="0 20 0 0">Confirm</Button>
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                            <Button HorizontalAlignment="Center" FontSize="18" Margin="0 20 40 0" Command="{Binding SetModelWindowModeSearchCommand}" >Cancel</Button>
+                            <Button HorizontalAlignment="Center" FontSize="18" Margin="40 20 0 0">Confirm</Button>
+                        </StackPanel>
                     </StackPanel>
                 </DockPanel>
             </Grid>

@@ -111,4 +111,24 @@ public partial class MainWindow : Window
             Console.WriteLine($"GUI Error: {ex.Message}");
         }
     }
+
+    private void EditModel(object sender, RoutedEventArgs e)
+    {
+        if(DataContext != null)
+        {
+            try
+            {
+                if(DataContext != null)
+                {
+                    var model = ((Button)sender).Tag as string;
+                    EditModelParentName.Text = model;
+                    ((MainWindowViewModel)DataContext).SetModelWindowModeEdit();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GUI Error: {ex.Message}");
+            }
+        }
+    }
 }
