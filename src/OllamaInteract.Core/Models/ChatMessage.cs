@@ -12,7 +12,7 @@ public class ChatMessage
     public string Role { get; protected set; } = "system";
 
     public ChatMessage() { }
-    
+
     public ChatMessage(string content, string role, string timestamp)
     {
         Content = content;
@@ -46,7 +46,7 @@ public class ChatRequest : ChatMessage
     }
 }
 
-public class ChatResponse : ChatMessage
+public class ChatResponse : ChatMessage, IResponse
 {
     public bool Success { get; set; }
     public long ResponseTime { get; set; }

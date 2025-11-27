@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Net.Http.Json;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Principal;
@@ -104,8 +105,30 @@ public class OllamaApiClient : IOllamaApiClient
     
     public async Task<bool> PullOllamaModelAsync(string model)
     {
-        var response = await _httpClient.PostAsJsonAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/pull", model);
+        try
+        {
+            var startTime = DateTime.Now;
 
-        return response.IsSuccessStatusCode;
+            var response = await _httpClient.PostAsJsonAsync($"http://{_configManager.Config.PythonHost}:{_configManager.Config.PythonPort}/api/v1/pull", model);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadFromJsonAsync<Response>();
+                if (json != null)
+                {
+                    return json.Success;
+                }
+                else
+                {
+                    throw new NoNullAllowedException();
+                }
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Communication error: {e.Message}");
+            return false;
+        }
     }
 }
