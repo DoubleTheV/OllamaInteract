@@ -99,7 +99,7 @@ public partial class MainWindow : Window
                 var model = (AvailableModel)button.Parent.Parent.DataContext;
                 var parameter = button.Content;
 
-                var modelName = $"{model}:{parameter}";
+                var modelName = $"{model.Name}:{parameter}";
                 if (DataContext != null)
                 {
                     _ = ((MainWindowViewModel)DataContext).PullModel(modelName);
