@@ -133,8 +133,8 @@
                 <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,5,5,5" VerticalAlignment="Stretch" LastChildFill="False"
                             IsVisible="{Binding CurrentModelWindowMode, Converter={StaticResource, ModelWindowMode}, ConverterParameter=Edit}">
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch">
-                        <TextBlock Name="EditModelParentName" HorizontalAlignment="Center" FontSize="18" Margin="0 0 0 5">Parent model</TextBlock>
-                        <TextBox HorizontalAlignment="Center" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" FontSize="16" Text="Llama 2" Margin="5" IsEnabled="False" Background="Transparent"/>
+                        <TextBlock HorizontalAlignment="Center" FontSize="18" Margin="0 0 0 5">Parent model</TextBlock>
+                        <TextBox Name="EditModelParentName" HorizontalAlignment="Center" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" FontSize="16" Text="Llama 2" Margin="5" IsEnabled="False" Background="Transparent"/>
                         <TextBlock HorizontalAlignment="Center" FontSize="18" Margin="10 0 0 5">Model name</TextBlock>
                         <TextBox HorizontalAlignment="Center" CornerRadius="8" BorderBrush="#6c757d" BorderThickness="1" FontSize="16" Text="GLaDOS" Margin="5" Background="Transparent"/>
                     </StackPanel>
