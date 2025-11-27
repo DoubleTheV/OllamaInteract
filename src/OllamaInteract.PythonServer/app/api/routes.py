@@ -100,6 +100,13 @@ async def search_models(prompt: Optional[str] = None):
 async def pull_model(request: Request):
     try:
         body = await request.json()
-        await ollama_client.pull_model(body)
+        status = await ollama_client.pull_model(body)
+        return {
+            "success": status == 'success',
+            "error": None
+        }
     except Exception as e:
-        print(e)
+        return {
+            "success": False,
+            "error": e
+        }

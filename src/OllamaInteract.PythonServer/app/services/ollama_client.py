@@ -34,5 +34,5 @@ class OllamaClient:
         return response['models']
 
     async def pull_model(self, model: str) -> bool:
-        self.client.pull(model).completed
-        return True
+        response = self.client.pull(model)
+        return response['status']
