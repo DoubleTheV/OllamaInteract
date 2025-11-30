@@ -21,6 +21,13 @@ public static class SqlQueries
             ON DELETE CASCADE 
             ON UPDATE CASCADE
         );
+
+        CREATE TABLE IF NOT EXISTS SubModels (
+            ID INTEGER PRIMARY KEY,
+            ParentModel VARCHAR(30) NOT NULL,
+            Name VARCHAR(30) NOT NULL,
+            SystemPrompt TEXT NOT NULL
+        )
     ";
 
     public static readonly string SaveConversation = @"
